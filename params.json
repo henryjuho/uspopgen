@@ -1,7 +1,7 @@
 {
   "name": "University of Sheffield PopGen Workshop March 2016",
   "tagline": "",
-  "body": "# uspopgen",
+  "body": "# SNP calling and Filtering\r\n\r\n\r\n\r\n## SNP callers\r\n\r\n### GATK\r\n\r\n### SAMTOOL/BCFTOOLS\r\n\r\n### ANGSD (SNP calling and Popgen analysis in low coverage data)\r\n\r\n\r\n\r\n## Understanding the VCF format\r\n\r\n\r\n¢## Which caller?\r\n\r\n\r\n\r\n## Filtering SNPs\r\n\r\nLink to file on filtering used in population genomic studies in birds\r\n\r\n### Depth filters\r\n\r\n### Base qualities, Strand Biases\r\n\r\n### Region Filters\r\n\r\n## GATK recommended Hard Filters\r\n\r\n## SFS\r\n\r\nComparing sfs\r\n\r\n",
   "google": "",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
