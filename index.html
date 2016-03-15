@@ -1,55 +1,75 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="University of Sheffield PopGen Workshop March 2016 : ">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>University of Sheffield PopGen Workshop March 2016</title>
+    <meta charset="UTF-8">
+    <title>University of Sheffield PopGen Workshop March 2016 by padraicc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">University of Sheffield PopGen Workshop March 2016</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/padraicc/uspopgen" class="btn">View on GitHub</a>
+      <a href="https://github.com/padraicc/uspopgen/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/padraicc/uspopgen/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/padraicc/uspopgen">View on GitHub</a>
-
-          <h1 id="project_title">University of Sheffield PopGen Workshop March 2016</h1>
-          <h2 id="project_tagline"></h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/padraicc/uspopgen/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/padraicc/uspopgen/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
+    <section class="main-content">
+      <h1>
 <a id="snp-calling-and-filtering" class="anchor" href="#snp-calling-and-filtering" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP calling and Filtering</h1>
+
+<p><img src="https://www.dropbox.com/s/9vbyir3i0gsp4mg/gatk_snp_calling_cropped.png?dl=0" alt="BAM processing"></p>
+
+<h2>
+<a id="programs-required" class="anchor" href="#programs-required" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Programs required</h2>
+
+<p>All the programs we will use are available on iceberg through the module system or from the genomics repository</p>
+
+<p>The following programs will be use</p>
+
+<ul>
+<li>samtools v1.2 (available through the module system)</li>
+<li>bcftools v1.3 (available in the genomics repository)</li>
+<li>GATK v3.4 (available through the  module system)</li>
+</ul>
 
 <h2>
 <a id="snp-callers" class="anchor" href="#snp-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP callers</h2>
 
 <h3>
-<a id="gatk" class="anchor" href="#gatk" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK</h3>
+<a id="understanding-the-vcf-format" class="anchor" href="#understanding-the-vcf-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Understanding the VCF format</h3>
+
+<p>GATK vcf file </p>
 
 <h3>
 <a id="samtoolbcftools" class="anchor" href="#samtoolbcftools" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAMTOOL/BCFTOOLS</h3>
 
+<pre><code>bash scripts/samtools_snp_calling.sh
+</code></pre>
+
+<h3>
+<a id="gatk" class="anchor" href="#gatk" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK</h3>
+
+<p><img src="https://www.dropbox.com/s/9mgi19m5h5hhzge/gatk_snp_calling.png?dl=0" alt="GATK Pipeline"></p>
+
+<pre><code>bash scripts/gatk_snp_calling.sh 
+</code></pre>
+
+<h3>
+<a id="comparing-the-output-from-different-callers" class="anchor" href="#comparing-the-output-from-different-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Comparing the output from different callers</h3>
+
+<p>Count the number of variants in the vcf file.</p>
+
+<pre><code>zgrep -cv ^# vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz 
+zgrep -cv ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
+</code></pre>
+
 <h3>
 <a id="angsd-snp-calling-and-popgen-analysis-in-low-coverage-data" class="anchor" href="#angsd-snp-calling-and-popgen-analysis-in-low-coverage-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ANGSD (SNP calling and Popgen analysis in low coverage data)</h3>
-
-<h2>
-<a id="understanding-the-vcf-format" class="anchor" href="#understanding-the-vcf-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Understanding the VCF format</h2>
-
-<p>¢## Which caller?</p>
 
 <h2>
 <a id="filtering-snps" class="anchor" href="#filtering-snps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filtering SNPs</h2>
@@ -72,18 +92,15 @@
 <a id="sfs" class="anchor" href="#sfs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SFS</h2>
 
 <p>Comparing sfs</p>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">University of Sheffield PopGen Workshop March 2016 maintained by <a href="https://github.com/padraicc">padraicc</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/padraicc/uspopgen">University of Sheffield PopGen Workshop March 2016</a> is maintained by <a href="https://github.com/padraicc">padraicc</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-    
+    </section>
 
+  
   </body>
 </html>
