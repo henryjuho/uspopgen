@@ -1,6 +1,6 @@
 # SNP calling and Filtering
 
-![BAM processing](https://www.dropbox.com/s/9vbyir3i0gsp4mg/gatk_snp_calling_cropped.png?dl=0)
+![](figures/gatk_snp_calling_cropped.png)
 
 
 ## Programs required
