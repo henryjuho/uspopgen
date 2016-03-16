@@ -4,6 +4,8 @@ We will use some whole genome data from 10 great tit idnviduals to look at SNP c
 These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
 analysed in [Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
 
+We will foucs on a small subset of the genome, calling SNPs on chrLGE22
+
 The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.
 
@@ -17,18 +19,49 @@ The following programs will be used:
 * GATK v3.4 (available through the  module system)
 * ANGSD v0.911
 
+## Obtaining the tutorial material
+
+Type the following at the command terminal
+
+    git clone https://github.com/padraicc/uspopgen
+
+Change directory into the uspopgen folder
+    
+    cd uspopgen
+    ls
+    
+You will find folders called data/ and scripts/ and a README.md files containing the the text for this webpage.
+
+## Data files
+
+The data files we will use are located in the data folder
+
+    ls data
+
+gvcf_files/ contains the 10 gVCF files needed for the GATK SNP calling
+bam_files/ cotains the BAM files for samtools SNP calling.
+ref_files/ contains the reference genome file for chrLGE22
+
 ## SNP callers
 
 We will call SNPs using GATK and samtools/bcftools.
 
-
 ### GATK SNP calling
 
+We will perform SNP calling of the 10 birds using the shell script called **gatk_snp_calling.sh**. Due to time constraints
+we will run the last strep of the GATK pipeline. Here we use the *GenotypeGVCFs* tool to produce the VCF files from the
+10 gVCF files in */data/gvcf_files*. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) 
+
+To run the script in the terminal just type the following:
+    
     bash scripts/gatk_snp_calling.sh 
 
-This compressed vcf file will be written in the vcf_files folder.
+This will result in a compressed VCF file being written in the new *vcf_files* folder found in the current working 
+directory.
 
-### SAMTOOL/BCFTOOLS SNP calling
+    ls vcf_files
+
+### SAMTOOLS/BCFTOOLS SNP calling
 
     bash scripts/samtools_snp_calling.sh
     
@@ -45,13 +78,17 @@ The INFO field contains a lot of annotations for the variant site (e.g Depth, Ma
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
 of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an indel.
 
-Now, take a look at the GATK file.
+Now, take a look at the GATK and samtools vcf files.
 
     less -S vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz
     less -S vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
 
+If you want to exclude the header section, try the following.
+    
+    zgrep -v ^## vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz | less -S
+    
 Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
-in the format fields. What differences do you see between the samtools VCF and the GATK VCF files?
+in the format fields. What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?
 
 ### Comparing the output from the two callers
 
