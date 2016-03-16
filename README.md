@@ -41,13 +41,14 @@ position within the reference chromosome/scaffold, an ID (here always ‘.’), 
 the SNP/INDEL quality score, the filter field, info field, the sample format field and the samples make up the remaining
 columns (10 in this case).
 
-The INFO field containing a lot of annotations for the variant site across samples (e.g Depth, Mapping Qualtity etc.) and
+The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
 of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an indel.
 
 Now, take a look at the GATK file.
 
-    less -S vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz 
+    less -S vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz
+    less -S vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
 
 Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
 in the format fields. What differences do you see between the samtools VCF and the GATK VCF files?
