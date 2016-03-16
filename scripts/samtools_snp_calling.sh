@@ -11,8 +11,6 @@ fi
 
 ls data/bam_files/*.bam > bams.list # create input list of bam files for samtools mpileup
 
-bcftools_1_3=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/bcftools
-
 export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
 
 samtools mpileup -q 20 -Q 10 -ugf  ${REF_FILE} -b bams.list | bcftools call -vmO z -f GQ -o ${VCF_OUT}/samtools.chrLGE22.raw.snps.indels.vcf.gz
