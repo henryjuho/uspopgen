@@ -79,7 +79,7 @@ Extract and compare the number of SNPs called by each caller using bedtools. Bed
 with genome interval data in bed, VCF or GFF format.
 
     module load apps/gcc/5.2/bedtools
-    bedtools intersect -a 
+    bedtools intersect -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz > vcf_files/both.chrLGE22.raw.snps.vcf.gz
     
     
 ## Filtering SNPs
