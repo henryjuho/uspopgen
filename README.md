@@ -1,10 +1,10 @@
 # SNP calling and Filtering
 
-We will use some whole genome data from the great tit to look at SNP calling and filtering.
-The data we will 10 great tit individuals from Europe, they are a subset of the 29 birds that were sequenced and 
-in [Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
+We will use some whole genome data from 10 great tit idnviduals to look at SNP calling and filtering.
+These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
+analysed in [Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
 
-The 10 birds were sequenced with illumina paired-end data with 100bp reads to a mean depth of between 9-14x.
+The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.
 
 ## Programs required
@@ -29,7 +29,6 @@ We will call SNPs using GATK and samtools/bcftools.
 This compressed vcf file will be written in the vcf_files folder.
 
 ### SAMTOOL/BCFTOOLS SNP calling
-
 
     bash scripts/samtools_snp_calling.sh
     
