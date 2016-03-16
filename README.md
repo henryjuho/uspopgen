@@ -15,7 +15,7 @@ The following programs will be used:
 * samtools v1.2 (available through the module system)
 * bcftools v1.3 (available in the genomics repository)
 * GATK v3.4 (available through the  module system)
-* ANGSD v
+* ANGSD v0.911
 
 ## SNP callers
 
