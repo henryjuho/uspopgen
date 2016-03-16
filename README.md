@@ -1,22 +1,29 @@
 # SNP calling and Filtering
 
-![BAM processing](https://www.dropbox.com/s/9vbyir3i0gsp4mg/gatk_snp_calling_cropped.png?dl=0)
+We will use some whole genome data from the great tit to look at SNP calling and filtering.
+The data we will 10 great tit individuals from Europe, they are a subset of the 29 birds that were sequenced and 
+in[Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
 
+The 10 birds were sequenced with illumina paired-end data with 100bp reads to a mean depth of between 9-14x.
+In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.
 
 ## Programs required
-All the programs we will use are available on iceberg through the module system or from the genomics repository
+All the programs we will use are available on iceberg through the module system or from the genomics repository.
 
-The following programs will be use
+The following programs will be used:
     
 * samtools v1.2 (available through the module system)
 * bcftools v1.3 (available in the genomics repository)
 * GATK v3.4 (available through the  module system)
+* ANGSD v
 
 ## SNP callers
 
-### Understanding the VCF format
+We will call SNPs using GATK and samtools/bcftools.
 
-GATK vcf file 
+### Understanding the VCF format
+First, we will take a look at the VCF format, as this is the output format for most SNP calling and genotyping programs
+ 
 
 ### SAMTOOL/BCFTOOLS
 
@@ -25,20 +32,35 @@ GATK vcf file
 
 ### GATK
 
-![GATK Pipeline](https://www.dropbox.com/s/9mgi19m5h5hhzge/gatk_snp_calling.png?dl=0)
-
     bash scripts/gatk_snp_calling.sh 
    
 ### Comparing the output from different callers
 
-Count the number of variants in the vcf file.
+We will count and compare the unfiltered SNP calls using some common command line tools and the bedtools program.
+
+Count the number of variants in the vcf file using zgrep (grep for compressed files).
 
     zgrep -cv ^# vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz 
     zgrep -cv ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
+    
+Which tool calls the most variants?
 
+Now we will extract only SNPs and discard the INDELs from the VCF using GATK's SelectVariants toll
+    
+    module load apps/binapps/GATK
+    
+    
+    
+Count the number of SNPs in the VCF files.
 
+Extract and compare the number of SNPs called by each caller using bedtools. Bedtools is a very usefule tools for working
+with genome interval data in bed, VCF or GFF format.
 
-### ANGSD (SNP calling and Popgen analysis in low coverage data)
+    module load apps/gcc/5.2/bedtools
+    
+    
+More information on these bedtools may be found here
+
 
 
 
@@ -52,7 +74,11 @@ Link to file on filtering used in population genomic studies in birds
 
 ### Region Filters
 
-## GATK recommended Hard Filters
+### GATK recommended Hard Filters
+
+
+
+## ANGSD (SNP calling and Popgen analysis in low coverage data)
 
 ## SFS
 
