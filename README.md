@@ -136,18 +136,16 @@ a number of SNP properties (many of those in the listed INFO field of the VCF) a
 particular meet that threshold.
 
 A number of common filters applied to SNP calls include
-    * Depth filters (setting a minimum and maximum depth for a site)
-    * Minimum SNP quality (Requiring a minimum quality in the QUAL field of the SNP)
-    * Minimum RMS mapping quality for SNPs
-    * Allele Balance (filtering sites where the fraction of non-reference reads is too low) 
-    * Strand Bias 
+    * Depth filters (Setting a minimum and maximum depth for a site)  
+    * Minimum SNP quality (Requiring a minimum quality in the QUAL field of the SNP)  
+    * Minimum RMS mapping quality for SNPs  
+    * Allele Balance (Filtering sites where the fraction of non-reference reads is too low)   
+    * Strand Bias (Filtering sites where the number of reference and non-reference reads are highly correlated with the strands of the reads)  
 
 For a summary of SNP filtering applied to whole genome resequencing studies in birds see [here](https://www.dropbox.com/s/xa0bndtz42i1uft/snp_filtering_avian_studies.pdf?dl=0)
 
 One of the simplest thresholds that can be applied is a minimum quality score. Here we will apply this to samtools VCF
 containing only SNPs. Here we will 
-
-
 
 ### GATK recommended Hard Filters
 
@@ -157,16 +155,17 @@ approach by using known variants to carry out Variant Quality Score Recalibratio
 large existing set of polymorphism data. Also, this approach may not be used for targeted reseuqencing such 
 GBS or RADseq data.
 
-In cases where VQSR can not be used, the GATK developer recommend a set of hard filters for filtering SNPs. Further details
+In cases where VQSR can not be used, the GATK developers recommend a set of hard filters for filtering SNPs. Further details
 on these recommended filters can be seen here [here](http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
 
 To apply the hard filters run the following command on the GATK VCF containing only SNPs.
 
-    java -jar GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"  --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
+    java -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 
 Count the number of SNPs that PASS the filters
 
-    zgrep -v ^# PASS vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
+    zgrep -cv ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c PASS
+    zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c GATK_hard_snp_filter 
 
 ## Region Filters
 
