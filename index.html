@@ -26,6 +26,8 @@
 These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
 analysed in <a href="http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html">Laine et al. (2016)</a>.</p>
 
+<p>We will foucs on a small subset of the genome, calling SNPs on chrLGE22</p>
+
 <p>The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.</p>
 
@@ -44,6 +46,34 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 </ul>
 
 <h2>
+<a id="obtaining-the-tutorial-material" class="anchor" href="#obtaining-the-tutorial-material" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Obtaining the tutorial material</h2>
+
+<p>Type the following at the command terminal</p>
+
+<pre><code>git clone https://github.com/padraicc/uspopgen
+</code></pre>
+
+<p>Change directory into the uspopgen folder</p>
+
+<pre><code>cd uspopgen
+ls
+</code></pre>
+
+<p>You will find folders called data/ and scripts/ and a README.md files containing the the text for this webpage.</p>
+
+<h2>
+<a id="data-files" class="anchor" href="#data-files" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Data files</h2>
+
+<p>The data files we will use are located in the data folder</p>
+
+<pre><code>ls data
+</code></pre>
+
+<p>gvcf_files/ contains the 10 gVCF files needed for the GATK SNP calling
+bam_files/ cotains the BAM files for samtools SNP calling.
+ref_files/ contains the reference genome file for chrLGE22</p>
+
+<h2>
 <a id="snp-callers" class="anchor" href="#snp-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP callers</h2>
 
 <p>We will call SNPs using GATK and samtools/bcftools.</p>
@@ -51,13 +81,23 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 <h3>
 <a id="gatk-snp-calling" class="anchor" href="#gatk-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK SNP calling</h3>
 
+<p>We will perform SNP calling of the 10 birds using the shell script called <strong>gatk_snp_calling.sh</strong>. Due to time constraints
+we will run the last strep of the GATK pipeline. Here we use the <em>GenotypeGVCFs</em> tool to produce the VCF files from the
+10 gVCF files in <em>/data/gvcf_files</em>. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) </p>
+
+<p>To run the script in the terminal just type the following:</p>
+
 <pre><code>bash scripts/gatk_snp_calling.sh 
 </code></pre>
 
-<p>This compressed vcf file will be written in the vcf_files folder.</p>
+<p>This will result in a compressed VCF file being written in the new <em>vcf_files</em> folder found in the current working 
+directory.</p>
+
+<pre><code>ls vcf_files
+</code></pre>
 
 <h3>
-<a id="samtoolbcftools-snp-calling" class="anchor" href="#samtoolbcftools-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAMTOOL/BCFTOOLS SNP calling</h3>
+<a id="samtoolsbcftools-snp-calling" class="anchor" href="#samtoolsbcftools-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAMTOOLS/BCFTOOLS SNP calling</h3>
 
 <pre><code>bash scripts/samtools_snp_calling.sh
 </code></pre>
@@ -77,14 +117,19 @@ columns (10 in this case).</p>
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
 of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an indel.</p>
 
-<p>Now, take a look at the GATK file.</p>
+<p>Now, take a look at the GATK and samtools vcf files.</p>
 
 <pre><code>less -S vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz
 less -S vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
 </code></pre>
 
+<p>If you want to exclude the header section, try the following.</p>
+
+<pre><code>zgrep -v ^## vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz | less -S
+</code></pre>
+
 <p>Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
-in the format fields. What differences do you see between the samtools VCF and the GATK VCF files?</p>
+in the format fields. What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?</p>
 
 <h3>
 <a id="comparing-the-output-from-the-two-callers" class="anchor" href="#comparing-the-output-from-the-two-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Comparing the output from the two callers</h3>
