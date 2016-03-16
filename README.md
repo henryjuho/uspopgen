@@ -38,9 +38,9 @@ The data files we will use are located in the data folder
 
     ls data
 
-gvcf_files/ contains the 10 gVCF files needed for the GATK SNP calling
-bam_files/ cotains the BAM files for samtools SNP calling.
-ref_files/ contains the reference genome file for chrLGE22
+**gvcf_files/** contains the 10 gVCF files needed for the GATK SNP calling.  
+**bam_files/** cotains the BAM files for samtools SNP calling.  
+**ref_files/** contains the reference genome file for chrLGE22.  
 
 ## SNP callers
 
