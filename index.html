@@ -22,60 +22,106 @@
       <h1>
 <a id="snp-calling-and-filtering" class="anchor" href="#snp-calling-and-filtering" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP calling and Filtering</h1>
 
-<p><img src="https://github.com/padraicc/uspopgen/blob/master/figures/gatk_snp_calling_cropped.pdf" alt="BAM processing"><br>
-Image from <a href="https://www.broadinstitute.org/gatk/events/slides/1506/GATKwr8-A-3-GATK_Best_Practices_and_Broad_pipelines.pdf">here</a></p>
+<p>We will use some whole genome data from 10 great tit idnviduals to look at SNP calling and filtering.
+These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
+analysed in <a href="http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html">Laine et al. (2016)</a>.</p>
+
+<p>The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
+In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.</p>
 
 <h2>
 <a id="programs-required" class="anchor" href="#programs-required" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Programs required</h2>
 
-<p>All the programs we will use are available on iceberg through the module system or from the genomics repository</p>
+<p>All the programs we will use are available on iceberg through the module system or from the genomics repository.</p>
 
-<p>The following programs will be use</p>
+<p>The following programs will be used:</p>
 
 <ul>
 <li>samtools v1.2 (available through the module system)</li>
 <li>bcftools v1.3 (available in the genomics repository)</li>
 <li>GATK v3.4 (available through the  module system)</li>
+<li>ANGSD v0.911</li>
 </ul>
 
 <h2>
 <a id="snp-callers" class="anchor" href="#snp-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP callers</h2>
 
-<h3>
-<a id="understanding-the-vcf-format" class="anchor" href="#understanding-the-vcf-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Understanding the VCF format</h3>
-
-<p>GATK vcf file </p>
+<p>We will call SNPs using GATK and samtools/bcftools.</p>
 
 <h3>
-<a id="samtoolbcftools" class="anchor" href="#samtoolbcftools" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAMTOOL/BCFTOOLS</h3>
+<a id="gatk-snp-calling" class="anchor" href="#gatk-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK SNP calling</h3>
+
+<pre><code>bash scripts/gatk_snp_calling.sh 
+</code></pre>
+
+<p>This compressed vcf file will be written in the vcf_files folder.</p>
+
+<h3>
+<a id="samtoolbcftools-snp-calling" class="anchor" href="#samtoolbcftools-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAMTOOL/BCFTOOLS SNP calling</h3>
 
 <pre><code>bash scripts/samtools_snp_calling.sh
 </code></pre>
 
 <h3>
-<a id="gatk" class="anchor" href="#gatk" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK</h3>
+<a id="understanding-the-vcf-format" class="anchor" href="#understanding-the-vcf-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Understanding the VCF format</h3>
 
-<p><img src="https://github.com/padraicc/uspopgen/blob/master/figures/gatk_snp_calling.pdf" alt="GATK Pipeline"></p>
+<p>First, we will take a look at the VCF format, as this is the output format for most SNP calling and genotyping programs</p>
 
-<pre><code>bash scripts/gatk_snp_calling.sh 
+<p>The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
+are located on the line starting with '#chrom'. The columns of the VCF from left to right are the chromosome/scaffold,<br>
+position within the reference chromosome/scaffold, an ID (here always ‘.’), the reference allele, the variant allele,
+the SNP/INDEL quality score, the filter field, info field, the sample format field and the samples make up the remaining
+columns (10 in this case).</p>
+
+<p>The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
+these values may be used for filtering (see below). The format for the genotype information is explained in the header
+of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an indel.</p>
+
+<p>Now, take a look at the GATK file.</p>
+
+<pre><code>less -S vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz
+less -S vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
 </code></pre>
 
-<h3>
-<a id="comparing-the-output-from-different-callers" class="anchor" href="#comparing-the-output-from-different-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Comparing the output from different callers</h3>
+<p>Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
+in the format fields. What differences do you see between the samtools VCF and the GATK VCF files?</p>
 
-<p>Count the number of variants in the vcf file.</p>
+<h3>
+<a id="comparing-the-output-from-the-two-callers" class="anchor" href="#comparing-the-output-from-the-two-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Comparing the output from the two callers</h3>
+
+<p>We will count and compare the unfiltered SNP calls using some common command line tools and the bedtools program.</p>
+
+<p>Count the number of variants in the vcf file using zgrep (grep for compressed files).</p>
 
 <pre><code>zgrep -cv ^# vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz 
 zgrep -cv ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
 </code></pre>
 
-<h3>
-<a id="angsd-snp-calling-and-popgen-analysis-in-low-coverage-data" class="anchor" href="#angsd-snp-calling-and-popgen-analysis-in-low-coverage-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ANGSD (SNP calling and Popgen analysis in low coverage data)</h3>
+<p>Which tool calls the most variants?</p>
+
+<p>Now we will extract only biallelic SNPs and discard the INDELs from the VCF using GATK's SelectVariants tool</p>
+
+<pre><code>module load apps/binapps/GATK
+java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
+</code></pre>
+
+<p>We will extract the SNPs from the samtools vcf, but first we need to index it, as the GATK tools require this.</p>
+
+<pre><code>tabix -p vcf vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz
+java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
+</code></pre>
+
+<p>How many SNPs in the VCF files?</p>
+
+<p>Extract and compare the number of SNPs called by each caller using bedtools. Bedtools is a very useful tools for working
+with genome interval data in bed, VCF or GFF format.</p>
+
+<pre><code>module load apps/gcc/5.2/bedtools
+bedtools intersect -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz &gt; vcf_files/both.chrLGE22.raw.snps.vcf.gz
+</code></pre>
 
 <h2>
 <a id="filtering-snps" class="anchor" href="#filtering-snps" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Filtering SNPs</h2>
-
-<p>Link to file on filtering used in population genomic studies in birds</p>
 
 <h3>
 <a id="depth-filters" class="anchor" href="#depth-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Depth filters</h3>
@@ -86,8 +132,11 @@ zgrep -cv ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz
 <h3>
 <a id="region-filters" class="anchor" href="#region-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Region Filters</h3>
 
+<h3>
+<a id="gatk-recommended-hard-filters" class="anchor" href="#gatk-recommended-hard-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK recommended Hard Filters</h3>
+
 <h2>
-<a id="gatk-recommended-hard-filters" class="anchor" href="#gatk-recommended-hard-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK recommended Hard Filters</h2>
+<a id="angsd-snp-calling-and-popgen-analysis-in-low-coverage-data" class="anchor" href="#angsd-snp-calling-and-popgen-analysis-in-low-coverage-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>ANGSD (SNP calling and Popgen analysis in low coverage data)</h2>
 
 <h2>
 <a id="sfs" class="anchor" href="#sfs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SFS</h2>
