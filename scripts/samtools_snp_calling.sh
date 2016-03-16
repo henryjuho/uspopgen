@@ -13,5 +13,5 @@ ls data/bam_files/*.bam > bams.list # create input list of bam files for samtool
 
 bcftools_1_3=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/bcftools
 
-samtools mpileup -ugf ${REF_FILE} -b bams.list | ${bcftools_1_3} call -vmO z -f GQ -o ${VCF_OUT}/samtools.chrLGE22.raw.snps.indels.vcf.gz
+samtools mpileup -q 20 -Q 10 -ugf  ${REF_FILE} -b bams.list | ${bcftools_1_3} call -vmO z -f GQ -o ${VCF_OUT}/samtools.chrLGE22.raw.snps.indels.vcf.gz
 
