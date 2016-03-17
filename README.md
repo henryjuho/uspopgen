@@ -208,7 +208,8 @@ We will choose half the mean as our minimum depth and twice the mean as our maxi
 > max_dp = 2.0*mean_dp
 > max_dp
 [1] 212.9975
-> quit()```
+> quit()
+```  
 
 We can also apply these filters with ```bcftools filter```. (Note that the '||' stand for the logical 'or')
     
