@@ -4,7 +4,7 @@ We will use some whole genome data from 10 great tit idnviduals to look at SNP c
 These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
 analysed in [Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
 
-We will foucs on a small subset of the genome, calling SNPs on chrLGE22
+We will focus on a small subset of the genome, calling SNPs on chrLGE22
 
 The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.
@@ -32,7 +32,7 @@ Now take a look at the contents.
 
     ls
     
-You will find folders called data/ and scripts/ and a README.md files containing the the text for this webpage.
+You will find folders called ```data/``` and ```scripts/``` and a README.md file containing the the text for this webpage.
 
 ## Data files
 
@@ -41,8 +41,8 @@ The data files we will use are located in the data folder
     ls data
 
 **gvcf_files/** contains the 10 gVCF files needed for the GATK SNP calling.  
-**bam_files/** cotains the BAM files for samtools SNP calling.  
-**ref_files/** contains the reference genome file for chrLGE22.  
+**bam_files/** cotains the BAM files needed for the samtools SNP calling.  
+**ref_files/** contains the great tit reference genome files for chrLGE22.  
 
 ## SNP callers
 
@@ -52,9 +52,9 @@ We will call SNPs using two popular SNP calling programs: GATK and samtools/bcft
 
 We will perform SNP calling of the 10 birds using the shell script called **gatk_snp_calling.sh**. Due to time constraints
 we will run the last strep of the GATK pipeline. Here we use the *GenotypeGVCFs* tool to produce the VCF files from the
-10 gVCF files in */data/gvcf_files*. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) 
+10 gVCF files in ```/data/gvcf_files```. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) 
 
-If you wish to take a look at the gatk command inside the shell script you can use *less* command as follows
+If you wish to take a look at the gatk command inside the shell script you can use ```less``` command as follows
 
     less -S scripts/gatk_snp_calling.sh
 
@@ -73,7 +73,7 @@ We will also use the samtools and bcftools programs to call SNPs from the BAM fi
 alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the */data/bam_files*
 folder. 
 
-To run the samtool snp calling just type the following:
+To run the samtools snp calling just type the following:
 
     bash scripts/samtools_snp_calling.sh
     
@@ -116,7 +116,7 @@ If you want to exclude the header section, try the following.
 
 To find an explanation of the info field in the samtools VCF, look at the last 25 lines of the header section
     
-    zgrep ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz | tail -n25
+    zgrep ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz | tail -n 25
     
 Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
 in the format fields. 
