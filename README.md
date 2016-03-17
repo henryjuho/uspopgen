@@ -97,7 +97,7 @@ _Table 1_ Description of VCF fields
 | 7 | FILTER | THe field storing filtering information as a string ('.' in an unfiltered file) |
 | 8 | INFO | ';' delimited list of variant annotations |
 | 9 | FORMAT | Describes the format for the sample genotype information in column 10 onward |
-| 10 to end | SAMPLES | Sample genotype information (Usually also stores the genotype qualities (GQ) and genotype likelihoods (GL or PL (phred-scaled) |
+| 10 to end | Sample id (from SM tag in BAM file RG string) | Sample genotype information (Usually also stores the genotype qualities (GQ) and genotype likelihoods (GL or PL (phred-scaled) |
  
  
 The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
