@@ -26,7 +26,7 @@
 These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
 analysed in <a href="http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html">Laine et al. (2016)</a>.</p>
 
-<p>We will foucs on a small subset of the genome, calling SNPs on chrLGE22</p>
+<p>We will focus on a small subset of the genome, calling SNPs on chrLGE22</p>
 
 <p>The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.</p>
@@ -62,7 +62,7 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 <pre><code>ls
 </code></pre>
 
-<p>You will find folders called data/ and scripts/ and a README.md files containing the the text for this webpage.</p>
+<p>You will find folders called <code>data/</code> and <code>scripts/</code> and a README.md file containing the the text for this webpage.</p>
 
 <h2>
 <a id="data-files" class="anchor" href="#data-files" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Data files</h2>
@@ -73,8 +73,8 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 </code></pre>
 
 <p><strong>gvcf_files/</strong> contains the 10 gVCF files needed for the GATK SNP calling.<br>
-<strong>bam_files/</strong> cotains the BAM files for samtools SNP calling.<br>
-<strong>ref_files/</strong> contains the reference genome file for chrLGE22.  </p>
+<strong>bam_files/</strong> cotains the BAM files needed for the samtools SNP calling.<br>
+<strong>ref_files/</strong> contains the great tit reference genome files for chrLGE22.  </p>
 
 <h2>
 <a id="snp-callers" class="anchor" href="#snp-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP callers</h2>
@@ -86,9 +86,9 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 
 <p>We will perform SNP calling of the 10 birds using the shell script called <strong>gatk_snp_calling.sh</strong>. Due to time constraints
 we will run the last strep of the GATK pipeline. Here we use the <em>GenotypeGVCFs</em> tool to produce the VCF files from the
-10 gVCF files in <em>/data/gvcf_files</em>. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) </p>
+10 gVCF files in <code>/data/gvcf_files</code>. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) </p>
 
-<p>If you wish to take a look at the gatk command inside the shell script you can use <em>less</em> command as follows</p>
+<p>If you wish to take a look at the gatk command inside the shell script you can use <code>less</code> command as follows</p>
 
 <pre><code>less -S scripts/gatk_snp_calling.sh
 </code></pre>
@@ -111,7 +111,7 @@ directory. </p>
 alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the <em>/data/bam_files</em>
 folder. </p>
 
-<p>To run the samtool snp calling just type the following:</p>
+<p>To run the samtools snp calling just type the following:</p>
 
 <pre><code>bash scripts/samtools_snp_calling.sh
 </code></pre>
@@ -124,11 +124,6 @@ folder.</p>
 
 <p>The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
 are located on the line starting with '#chrom'. </p>
-
-<p>The columns of the VCF from left to right are the chromosome/scaffold,<br>
-position within the reference chromosome/scaffold, an ID (here always ‘.’), the reference allele, the variant allele,
-the SNP/INDEL quality score, the filter field, info field, the sample format field and the samples make up the remaining
-columns (10 in this case).</p>
 
 <p><em>Table 1</em> Description of VCF fields</p>
 
@@ -146,12 +141,58 @@ columns (10 in this case).</p>
 <td align="left">CHROM</td>
 <td align="left">chromosome/scaffold</td>
 </tr>
+<tr>
+<td align="left">2</td>
+<td align="left">POS</td>
+<td align="left">Position on the chromosome/scaffold given in CHROM (1-based)</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">ID</td>
+<td align="left">ID for the SNP/INDEL (Here always '.')</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">REF</td>
+<td align="left">Allele in the reference genome</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">ALT</td>
+<td align="left">The variant allele</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">QUAL</td>
+<td align="left">The variant quality score (phred-scale)</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">FILTER</td>
+<td align="left">THe field storing filtering information as a string ('.' in an unfiltered file)</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">INFO</td>
+<td align="left">';' delimited list of variant annotations</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left">FORMAT</td>
+<td align="left">Describes the format for the sample genotype information in column 10 onward</td>
+</tr>
+<tr>
+<td align="left">10 to end</td>
+<td align="left">Sample id (from SM tag in BAM file RG string)</td>
+<td align="left">Sample genotype information (Usually also stores the genotype qualities (GQ) and genotype likelihoods (GL or PL (phred-scaled)</td>
+</tr>
 </tbody>
 </table>
 
 <p>The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
-of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an indel.</p>
+of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an INDEL. For more
+information on the VCF format see <a href="http://samtools.github.io/hts-specs/VCFv4.2.pdf">here.</a></p>
 
 <p>Now, take a look at the GATK and samtools vcf files.</p>
 
@@ -166,7 +207,7 @@ less -S vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz
 
 <p>To find an explanation of the info field in the samtools VCF, look at the last 25 lines of the header section</p>
 
-<pre><code>zgrep ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz | tail -n25
+<pre><code>zgrep ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz | tail -n 25
 </code></pre>
 
 <p>Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
@@ -274,7 +315,7 @@ on these recommended filters can be seen here <a href="http://gatkforums.broadin
 
 <p>To apply the hard filters run the following command on the GATK VCF containing only SNPs.</p>
 
-<pre><code>java -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD &lt; 2.0 || FS &gt; 60.0 || MQ &lt; 40.0 || MQRankSum &lt; -12.5 || ReadPosRankSum &lt; -8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
+<pre><code>java -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD&lt; 2.0||FS&gt;60.0||MQ&lt;40.0||MQRankSum&lt;-12.5||ReadPosRankSum&lt;-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 </code></pre>
 
 <p>Count the number of SNPs that PASS the filters</p>
