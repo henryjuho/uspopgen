@@ -89,7 +89,7 @@ _Table 1_ Description of VCF fields
 
 | Column Number| Title | What it contains |  
 |:--|:--|:--|  
-| 1 | CHROM | Chromosome/scaffold |
+| 1 | CHROM | Chromosome/scaffold of the reference genome |
 | 2 | POS | Position on the chromosome/scaffold given in CHROM (1-based) |
 | 3 | ID | ID for the SNP/INDEL (Here always '.')  |
 | 4 | REF | Allele in the reference genome  |
