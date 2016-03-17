@@ -42,6 +42,7 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 <li>samtools v1.2 (available through the module system)</li>
 <li>bcftools v1.3 (available in the genomics repository)</li>
 <li>GATK v3.4 (available through the  module system)</li>
+<li>bedtools v2.5 (available through the module system)</li>
 </ul>
 
 <h2>
@@ -86,7 +87,7 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 
 <p>We will perform SNP calling of the 10 birds using the shell script called <strong>gatk_snp_calling.sh</strong>. Due to time constraints
 we will run the last strep of the GATK pipeline. Here we use the <em>GenotypeGVCFs</em> tool to produce the VCF files from the
-10 gVCF files in <code>/data/gvcf_files</code>. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) </p>
+10 gVCF files in <code>data/gvcf_files</code>. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) </p>
 
 <p>If you wish to take a look at the gatk command inside the shell script you can use <code>less</code> command as follows</p>
 
@@ -108,7 +109,7 @@ directory. </p>
 <a id="samtoolsbcftools-snp-calling" class="anchor" href="#samtoolsbcftools-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAMTOOLS/BCFTOOLS SNP calling</h3>
 
 <p>We will also use the samtools and bcftools programs to call SNPs from the BAM file for our 10 birds. The BAM contain the
-alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the <em>/data/bam_files</em>
+alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the <code>data/bam_files/</code>
 folder. </p>
 
 <p>To run the samtools snp calling just type the following:</p>
@@ -119,7 +120,7 @@ folder. </p>
 <h3>
 <a id="understanding-the-vcf-format" class="anchor" href="#understanding-the-vcf-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Understanding the VCF format</h3>
 
-<p>Now that we have run the SNP calling programs we will take a look at the VCF format files contained in the <em>vcf_files</em>
+<p>Now that we have run the SNP calling programs we will take a look at the VCF format files contained in the <code>vcf_files/</code>
 folder.</p>
 
 <p>The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
@@ -210,8 +211,8 @@ less -S vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz
 <pre><code>zgrep ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz | tail -n 25
 </code></pre>
 
-<p>Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
-in the format fields. </p>
+<p>Note that different SNP callers will produce some different annotations in the INFO field and genotype
+fields. </p>
 
 <p>Q1. What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?</p>
 
@@ -331,8 +332,9 @@ included in the GATK filters?</p>
 <a id="region-filters" class="anchor" href="#region-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Region Filters</h2>
 
 <p>Another common additional filter applied to filtering SNPs in whole genome data is to exclude SNPs that fall in 
-repetitve regions of the genomes where mapping may be problematics. Here we will further filter the GATK hard filtered 
-VCF file to exclude SNPs in repetitive regions using a bed file which specifies the repetitive regions of chrLGE22.</p>
+repetitive regions of the genomes where mapping may be problematic. Here we will further filter the GATK hard filtered 
+VCF file to exclude SNPs in repetitive regions using a bed file located at <code>data/ref_files/chrLGE22.reps.bed</code> which 
+specifies the repetitive regions of chrLGE22.</p>
 
 <p>How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
 found in repetitive regions?</p>
