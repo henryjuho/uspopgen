@@ -17,15 +17,14 @@ The following programs will be used:
 * samtools v1.2 (available through the module system)
 * bcftools v1.3 (available in the genomics repository)
 * GATK v3.4 (available through the  module system)
-* ANGSD v0.911
 
 ## Obtaining the tutorial material
 
-Type the following at the command terminal
+Type the following at the command terminal.
 
     git clone https://github.com/padraicc/uspopgen
-
-Change directory into the uspopgen folder
+    
+This will download a folder called uspopgen into your current directory. Change directory into the uspopgen folder
     
     cd uspopgen
     ls
@@ -86,6 +85,10 @@ Now, take a look at the GATK and samtools vcf files.
 If you want to exclude the header section, try the following.
     
     zgrep -v ^## vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz | less -S
+
+To find an explanation of the info field in the samtools VCF, look at the last 25 lines of the header section
+    
+    zgrep ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz | tail -n25
     
 Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
 in the format fields. 
@@ -136,23 +139,37 @@ a number of SNP properties (many of those in the listed INFO field of the VCF) a
 particular meet that threshold.
 
 A number of common filters applied to SNP calls include
+
 * Depth filters (Setting a minimum and maximum depth for a site)  
 * Minimum SNP quality (Requiring a minimum quality in the QUAL field of the SNP)  
 * Minimum RMS mapping quality for SNPs  
 * Allele Balance (Filtering sites where the fraction of non-reference reads is too low)   
 * Strand Bias (Filtering sites where the number of reference and non-reference reads are highly correlated with the strands of the reads)  
+* Hardy-Weiberg Equilibrium (Filter sites that show significant deviation from Hardy-Weinberg Expectations) 
 
 For a summary of SNP filtering applied to whole genome resequencing studies in birds see [here](https://www.dropbox.com/s/xa0bndtz42i1uft/snp_filtering_avian_studies.pdf?dl=0)
 
-One of the simplest thresholds that can be applied is a minimum quality score. Here we will apply this to samtools VCF
-containing only SNPs. Here we will 
+One of the simplest thresholds that can be applied is a minimum quality score. Here we will use the a *bcftools filter*
+to filter our samtools SNP VCF. Documentation on this tool can be found [here](https://samtools.github.io/bcftools/bcftools.html#filter)
 
+    export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
+    bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
+
+ We can also add further filters on minimum and maximum depth.
+    
+    bcftools filter -e "QUAL<30 && MAX(DP)>250 && MIN(DP)<20 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
+ 
+Now we will count the number of SNPs that have been filtered.
+
+     zgrep -v ^# vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz | grep -cw LOW_QUAL
+     zgrep -v ^# vcf_files/samtools.chrLGE22.depth_filtered.snps.vcf.gz | grep -cw LOW_QUAL
+     
 ### GATK recommended Hard Filters
 
 In GATK there are two options for filtering SNPs, either hard of soft filtering. The first is to use a 'soft' filtering 
 approach by using known variants to carry out Variant Quality Score Recalibration. This approach requires a large number 
-(100,000s) of known SNPs and maynot be useful for researcher working on non-model organisms, or species without 
-large existing set of polymorphism data. Also, this approach may not be used for targeted reseuqencing such 
+(100,000s) of known SNPs and may not be useful for researchers working on non-model organisms, or species without 
+a large existing set of polymorphism data. Also, this approach may not be used for targeted resequencing such 
 GBS or RADseq data.
 
 In cases where VQSR can not be used, the GATK developers recommend a set of hard filters for filtering SNPs. Further details
@@ -167,13 +184,17 @@ Count the number of SNPs that PASS the filters
     zgrep -cv ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c PASS
     zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c GATK_hard_snp_filter 
 
+How many SNPs were filtered using the GATK recommended filters? Which of the common filters were listed above were not
+included in the GATK filters?
+
 ## Region Filters
 
 Another common additional filter applied to filtering SNPs in whole genome data is to exclude SNPs that fall in 
-repetitve regions of the genomes. Here we will further filter the GATK hard filtered VCF file to exclude SNPs in repetive
-regions using a bed file which specifies the repetitive regions of chrLGE22
+repetitve regions of the genomes where mapping may be problematics. Here we will further filter the GATK hard filtered 
+VCF file to exclude SNPs in repetitive regions using a bed file which specifies the repetitive regions of chrLGE22.
 
-How might you exclude SNPs in our GATK VCF file within repetitive regions using bedtools subtract?
+How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
+found in repetitive regions?
 
 
 *Solutions to all the questions can be downloaded from here* 
