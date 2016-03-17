@@ -85,7 +85,7 @@ folder.
 The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
 are located on the line starting with '#CHROM'. 
 
-_Table 1_ Description of VCF fields
+**Table 1** Description of VCF fields
 
 | Column Number| Title | What it contains |  
 |:--|:--|:--|  
@@ -189,9 +189,9 @@ to filter our samtools SNP VCF. Documentation on this tool can be found [here.](
 
     zgrep -v ^# vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | cut -f8  | grep -oe "DP=[0-9]*" | sed 's/DP=//g' > samtools.SNP.depth
 
-Next we will calculate the mean in *R*.
+Next we will calculate the mean in **R**.
 
-Launch R.
+To launch R in the terminal type R.
 
     R
  
