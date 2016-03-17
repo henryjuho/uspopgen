@@ -83,7 +83,7 @@ Now that we have run the SNP calling programs we will take a look at the VCF for
 folder.
  
 The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
-are located on the line starting with '#chrom'. 
+are located on the line starting with '#CHROM'. 
 
 _Table 1_ Description of VCF fields
 
