@@ -174,7 +174,7 @@ Some common filters applied to SNP calls include:
 * Minimum RMS mapping quality for SNPs  
 * Allele Balance (Filtering sites where the fraction of non-reference reads is too low)   
 * Strand Bias (Filtering sites where the number of reference and non-reference reads are highly correlated with the strands of the reads)  
-* Hardy-Weiberg Equilibrium (Filter sites that show significant deviation from Hardy-Weinberg Expectations) 
+* Hardy-Weinberg Equilibrium (Filter sites that show significant deviation from Hardy-Weinberg Expectations) 
 
 For a summary of SNP filtering applied to whole genome resequencing studies in birds see [here.](https://www.dropbox.com/s/xa0bndtz42i1uft/snp_filtering_avian_studies.pdf?dl=0)
 
