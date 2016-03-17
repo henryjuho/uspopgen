@@ -84,23 +84,26 @@ folder.
 The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
 are located on the line starting with '#chrom'. 
 
-The columns of the VCF from left to right are the chromosome/scaffold,  
-position within the reference chromosome/scaffold, an ID (here always ‘.’), the reference allele, the variant allele,
-the SNP/INDEL quality score, the filter field, info field, the sample format field and the samples make up the remaining
-columns (10 in this case).
-
-
 _Table 1_ Description of VCF fields
 
 | Column Number| Title | What it contains |  
 |:--|:--|:--|  
 | 1 | CHROM | chromosome/scaffold |
-
-
-
+| 2 | POS | Position on the chromosome/scaffold given in CHROM (1-based) |
+| 3 | ID | ID for the SNP/INDEL (Here always '.')  |
+| 4 | REF | Allele in the reference genome  |
+| 5 | ALT | The variant allele |
+| 6 | QUAL | The variant quality score (phred-scale) |
+| 7 | FILTER | THe field storing filtering information as a string ('.' in an unfiltered file) |
+| 8 | INFO | ';' delimited list of variant annotations |
+| 9 | FORMAT | Describes the format for the sample genotype information in column 10 onward |
+| 10 to end | SAMPLES | Sample genotype information (Usually also stores the genotype qualities (GQ) and genotype likelihoods (GL or PL (phred-scaled) |
+ 
+ 
 The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
-of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an indel.
+of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an INDEL. For more
+information on the VCF format see [here.](http://samtools.github.io/hts-specs/VCFv4.2.pdf)
 
 Now, take a look at the GATK and samtools vcf files.
 
