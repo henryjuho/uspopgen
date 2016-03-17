@@ -17,6 +17,7 @@ The following programs will be used:
 * samtools v1.2 (available through the module system)
 * bcftools v1.3 (available in the genomics repository)
 * GATK v3.4 (available through the  module system)
+* bedtools v2.5 (available through the module system)
 
 ## Obtaining the tutorial material
 
@@ -52,7 +53,7 @@ We will call SNPs using two popular SNP calling programs: GATK and samtools/bcft
 
 We will perform SNP calling of the 10 birds using the shell script called **gatk_snp_calling.sh**. Due to time constraints
 we will run the last strep of the GATK pipeline. Here we use the *GenotypeGVCFs* tool to produce the VCF files from the
-10 gVCF files in ```/data/gvcf_files```. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) 
+10 gVCF files in ```data/gvcf_files```. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) 
 
 If you wish to take a look at the gatk command inside the shell script you can use ```less``` command as follows
 
@@ -70,7 +71,7 @@ directory.
 ### SAMTOOLS/BCFTOOLS SNP calling
 
 We will also use the samtools and bcftools programs to call SNPs from the BAM file for our 10 birds. The BAM contain the
-alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the */data/bam_files*
+alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the ```data/bam_files/```
 folder. 
 
 To run the samtools snp calling just type the following:
@@ -78,7 +79,7 @@ To run the samtools snp calling just type the following:
     bash scripts/samtools_snp_calling.sh
     
 ### Understanding the VCF format
-Now that we have run the SNP calling programs we will take a look at the VCF format files contained in the *vcf_files*
+Now that we have run the SNP calling programs we will take a look at the VCF format files contained in the ```vcf_files/```
 folder.
  
 The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
@@ -118,8 +119,8 @@ To find an explanation of the info field in the samtools VCF, look at the last 2
     
     zgrep ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz | tail -n 25
     
-Note that different SNP callers will have some differences in the annotations present in the INFO field and differences
-in the format fields. 
+Note that different SNP callers will produce some different annotations in the INFO field and genotype
+fields. 
 
 Q1. What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?
 
@@ -218,8 +219,9 @@ included in the GATK filters?
 ## Region Filters
 
 Another common additional filter applied to filtering SNPs in whole genome data is to exclude SNPs that fall in 
-repetitve regions of the genomes where mapping may be problematics. Here we will further filter the GATK hard filtered 
-VCF file to exclude SNPs in repetitive regions using a bed file which specifies the repetitive regions of chrLGE22.
+repetitive regions of the genomes where mapping may be problematic. Here we will further filter the GATK hard filtered 
+VCF file to exclude SNPs in repetitive regions using a bed file located at ```data/ref_files/chrLGE22.reps.bed``` which 
+specifies the repetitive regions of chrLGE22.
 
 How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
 found in repetitive regions?
