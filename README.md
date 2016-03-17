@@ -184,9 +184,35 @@ to filter our samtools SNP VCF. Documentation on this tool can be found [here.](
     export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
     bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
 
- We can also add further filters on minimum and maximum depth.
+ We can also add further filters on minimum and maximum depth. We will first calculate the mean depth across site by using
+ the value in the DP INFO field. We can extract the depth with the following
+
+    zgrep -v ^# vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | cut -f8  | grep -oe "DP=[0-9]*" | sed 's/DP=//g' > samtools.SNP.depth
+
+Next we will calculate the mean in *R*.
+
+Launch R.
+
+    R
+ 
+We will choose half the mean as our minimum depth and twice the mean as our maximum depth cutoff.
+
+    ```R
+    > dat <- read.delim("samtools.SNP.depth", header=F)
+    > mean_dp = mean(dat$V1)
+    > [1] 106.4987
+    [1] 106.4987
+    > min_dp = 0.5*mean_dp
+    > min_dp              
+    [1] 53.24937
+    > max_dp = 2.0*mean_dp
+    > max_dp
+    [1] 212.9975
+    > quit()```
+
+We can also apply these filters with ```bcftools filter```. (Note that the '||' stand for the logical 'or')
     
-    bcftools filter -e "QUAL<30 && MAX(DP)>250 && MIN(DP)<20 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
+    bcftools filter -e "QUAL<30 || MAX(DP)>213 || MIN(DP)<53 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
  
 Now we will count the number of SNPs that have been filtered.
 
