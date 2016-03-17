@@ -24,9 +24,12 @@ Type the following at the command terminal.
 
     git clone https://github.com/padraicc/uspopgen
     
-This will download a folder called uspopgen into your current directory. Change directory into the uspopgen folder
+This will download a folder called uspopgen into your current directory. Change directory into the uspopgen folder.
     
     cd uspopgen
+    
+Now take a look at the contents.
+
     ls
     
 You will find folders called data/ and scripts/ and a README.md files containing the the text for this webpage.
@@ -43,7 +46,7 @@ The data files we will use are located in the data folder
 
 ## SNP callers
 
-We will call SNPs using GATK and samtools/bcftools.
+We will call SNPs using two popular SNP calling programs: GATK and samtools/bcftools.
 
 ### GATK SNP calling
 
@@ -51,27 +54,49 @@ We will perform SNP calling of the 10 birds using the shell script called **gatk
 we will run the last strep of the GATK pipeline. Here we use the *GenotypeGVCFs* tool to produce the VCF files from the
 10 gVCF files in */data/gvcf_files*. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) 
 
+If you wish to take a look at the gatk command inside the shell script you can use *less* command as follows
+
+    less -S scripts/gatk_snp_calling.sh
+
 To run the script in the terminal just type the following:
     
     bash scripts/gatk_snp_calling.sh 
-
+    
 This will result in a compressed VCF file being written in the new *vcf_files* folder found in the current working 
-directory.
+directory. 
 
     ls vcf_files
 
 ### SAMTOOLS/BCFTOOLS SNP calling
 
+We will also use the samtools and bcftools programs to call SNPs from the BAM file for our 10 birds. The BAM contain the
+alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the */data/bam_files*
+folder. 
+
+To run the samtool snp calling just type the following:
+
     bash scripts/samtools_snp_calling.sh
     
 ### Understanding the VCF format
-First, we will take a look at the VCF format, as this is the output format for most SNP calling and genotyping programs
+Now that we have run the SNP calling programs we will take a look at the VCF format files contained in the *vcf_files*
+folder.
  
 The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
-are located on the line starting with '#chrom'. The columns of the VCF from left to right are the chromosome/scaffold,  
+are located on the line starting with '#chrom'. 
+
+The columns of the VCF from left to right are the chromosome/scaffold,  
 position within the reference chromosome/scaffold, an ID (here always ‘.’), the reference allele, the variant allele,
 the SNP/INDEL quality score, the filter field, info field, the sample format field and the samples make up the remaining
 columns (10 in this case).
+
+
+_Table 1_ Description of VCF fields
+
+| Column Number| Title | What it contains |  
+|:--|:--|:--|  
+| 1 | CHROM | chromosome/scaffold |
+
+
 
 The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
