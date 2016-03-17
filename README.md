@@ -33,7 +33,7 @@ Now take a look at the contents.
 
     ls
     
-You will find folders called ```data/``` and ```scripts/``` and a README.md file containing the the text for this webpage.
+You will find folders called ```data/``` and ```scripts/``` and a ```README.md``` file containing the the text for this webpage.
 
 ## Data files
 
@@ -51,9 +51,9 @@ We will call SNPs using two popular SNP calling programs: GATK and samtools/bcft
 
 ### GATK SNP calling
 
-We will perform SNP calling of the 10 birds using the shell script called **gatk_snp_calling.sh**. Due to time constraints
-we will run the last strep of the GATK pipeline. Here we use the *GenotypeGVCFs* tool to produce the VCF files from the
-10 gVCF files in ```data/gvcf_files```. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) 
+We will perform SNP calling of the 10 birds using the shell script called ```gatk_snp_calling.sh```. Due to time constraints
+we will only run the last step of the GATK pipeline. Here we use the *GenotypeGVCFs* tool to produce the VCF files from the
+10 gVCF files in ```data/gvcf_files```. (The gVCF used as input files were produced using the GATK *HaplotypeCaller* tool.) 
 
 If you wish to take a look at the gatk command inside the shell script you can use ```less``` command as follows
 
@@ -68,7 +68,7 @@ directory.
 
     ls vcf_files
 
-### SAMTOOLS/BCFTOOLS SNP calling
+### SAMtools and bcftools SNP calling
 
 We will also use the samtools and bcftools programs to call SNPs from the BAM file for our 10 birds. The BAM contain the
 alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the ```data/bam_files/```
@@ -89,7 +89,7 @@ _Table 1_ Description of VCF fields
 
 | Column Number| Title | What it contains |  
 |:--|:--|:--|  
-| 1 | CHROM | chromosome/scaffold |
+| 1 | CHROM | Chromosome/scaffold |
 | 2 | POS | Position on the chromosome/scaffold given in CHROM (1-based) |
 | 3 | ID | ID for the SNP/INDEL (Here always '.')  |
 | 4 | REF | Allele in the reference genome  |
@@ -135,12 +135,12 @@ Count the number of variants in the vcf file using zgrep (grep for compressed fi
     
 Q2. Which tool calls the most variants?
 
-Now we will extract only biallelic SNPs and discard the INDELs from the VCF using GATK's SelectVariants tool
+Now we will extract only biallelic SNPs and discard the INDELs from the VCF using GATK's SelectVariants tool.
     
     module load apps/binapps/GATK
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
 
-We will extract the SNPs from the samtools vcf, but first we need to index it, as the GATK tools require this.
+We will also extract the SNPs from the samtools vcf, but first we need to index it, as the GATK tools require this.
 
     tabix -p vcf vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
@@ -164,10 +164,10 @@ Q4. How many SNPs were called by both callers? How many by only one of the calle
 
 We now have the raw SNPs in VCF format. However, these files are likely to contain a number of false positives, so we need
 to apply some hard filters to remove sites that may not be true SNPs. Hard filtering refers to setting a threshold on
-a number of SNP properties (many of those in the listed INFO field of the VCF) and removing any SNPs that fail to meet a
-particular meet that threshold.
+a number of SNP properties (many of those in the listed INFO field of the VCF) and removing any SNPs that fail to meet 
+that threshold.
 
-A number of common filters applied to SNP calls include
+Some common filters applied to SNP calls include:
 
 * Depth filters (Setting a minimum and maximum depth for a site)  
 * Minimum SNP quality (Requiring a minimum quality in the QUAL field of the SNP)  
@@ -176,10 +176,10 @@ A number of common filters applied to SNP calls include
 * Strand Bias (Filtering sites where the number of reference and non-reference reads are highly correlated with the strands of the reads)  
 * Hardy-Weiberg Equilibrium (Filter sites that show significant deviation from Hardy-Weinberg Expectations) 
 
-For a summary of SNP filtering applied to whole genome resequencing studies in birds see [here](https://www.dropbox.com/s/xa0bndtz42i1uft/snp_filtering_avian_studies.pdf?dl=0)
+For a summary of SNP filtering applied to whole genome resequencing studies in birds see [here.](https://www.dropbox.com/s/xa0bndtz42i1uft/snp_filtering_avian_studies.pdf?dl=0)
 
 One of the simplest thresholds that can be applied is a minimum quality score. Here we will use the a *bcftools filter*
-to filter our samtools SNP VCF. Documentation on this tool can be found [here](https://samtools.github.io/bcftools/bcftools.html#filter)
+to filter our samtools SNP VCF. Documentation on this tool can be found [here.](https://samtools.github.io/bcftools/bcftools.html#filter)
 
     export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
     bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
@@ -208,7 +208,7 @@ To apply the hard filters run the following command on the GATK VCF containing o
 
     java -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD< 2.0||FS>60.0||MQ<40.0||MQRankSum<-12.5||ReadPosRankSum<-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 
-Count the number of SNPs that PASS the filters
+Count the number of SNPs that PASS the filters.
 
     zgrep -cv ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c PASS
     zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c GATK_hard_snp_filter 
