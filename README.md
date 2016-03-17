@@ -200,7 +200,6 @@ We will choose half the mean as our minimum depth and twice the mean as our maxi
 ```R
 > dat <- read.delim("samtools.SNP.depth", header=F)
 > mean_dp = mean(dat$V1)
-> [1] 106.4987
 [1] 106.4987
 > min_dp = 0.5*mean_dp
 > min_dp              
