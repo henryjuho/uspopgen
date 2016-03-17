@@ -126,7 +126,7 @@ folder.</p>
 <p>The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
 are located on the line starting with '#CHROM'. </p>
 
-<p><em>Table 1</em> Description of VCF fields</p>
+<p><strong>Table 1</strong> Description of VCF fields</p>
 
 <table>
 <thead>
@@ -140,7 +140,7 @@ are located on the line starting with '#CHROM'. </p>
 <tr>
 <td align="left">1</td>
 <td align="left">CHROM</td>
-<td align="left">Chromosome/scaffold</td>
+<td align="left">Chromosome/scaffold of the reference genome</td>
 </tr>
 <tr>
 <td align="left">2</td>
@@ -297,9 +297,9 @@ bcftools filter -e "QUAL&lt;30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.sn
 <pre><code>zgrep -v ^# vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | cut -f8  | grep -oe "DP=[0-9]*" | sed 's/DP=//g' &gt; samtools.SNP.depth
 </code></pre>
 
-<p>Next we will calculate the mean in <em>R</em>.</p>
+<p>Next we will calculate the mean in <strong>R</strong>.</p>
 
-<p>Launch R.</p>
+<p>To launch R in the terminal type R.</p>
 
 <pre><code>R
 </code></pre>
