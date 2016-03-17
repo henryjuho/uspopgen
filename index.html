@@ -52,10 +52,14 @@ In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platy
 <pre><code>git clone https://github.com/padraicc/uspopgen
 </code></pre>
 
-<p>This will download a folder called uspopgen into your current directory. Change directory into the uspopgen folder</p>
+<p>This will download a folder called uspopgen into your current directory. Change directory into the uspopgen folder.</p>
 
 <pre><code>cd uspopgen
-ls
+</code></pre>
+
+<p>Now take a look at the contents.</p>
+
+<pre><code>ls
 </code></pre>
 
 <p>You will find folders called data/ and scripts/ and a README.md files containing the the text for this webpage.</p>
@@ -75,7 +79,7 @@ ls
 <h2>
 <a id="snp-callers" class="anchor" href="#snp-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP callers</h2>
 
-<p>We will call SNPs using GATK and samtools/bcftools.</p>
+<p>We will call SNPs using two popular SNP calling programs: GATK and samtools/bcftools.</p>
 
 <h3>
 <a id="gatk-snp-calling" class="anchor" href="#gatk-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK SNP calling</h3>
@@ -84,13 +88,18 @@ ls
 we will run the last strep of the GATK pipeline. Here we use the <em>GenotypeGVCFs</em> tool to produce the VCF files from the
 10 gVCF files in <em>/data/gvcf_files</em>. (The gVCF used as input files were produced using the GATK HaplotypeCaller program.) </p>
 
+<p>If you wish to take a look at the gatk command inside the shell script you can use <em>less</em> command as follows</p>
+
+<pre><code>less -S scripts/gatk_snp_calling.sh
+</code></pre>
+
 <p>To run the script in the terminal just type the following:</p>
 
 <pre><code>bash scripts/gatk_snp_calling.sh 
 </code></pre>
 
 <p>This will result in a compressed VCF file being written in the new <em>vcf_files</em> folder found in the current working 
-directory.</p>
+directory. </p>
 
 <pre><code>ls vcf_files
 </code></pre>
@@ -98,19 +107,47 @@ directory.</p>
 <h3>
 <a id="samtoolsbcftools-snp-calling" class="anchor" href="#samtoolsbcftools-snp-calling" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SAMTOOLS/BCFTOOLS SNP calling</h3>
 
+<p>We will also use the samtools and bcftools programs to call SNPs from the BAM file for our 10 birds. The BAM contain the
+alignments of the reads mapped to the great tit chrLGE22 reference genome. The bam files are located in the <em>/data/bam_files</em>
+folder. </p>
+
+<p>To run the samtool snp calling just type the following:</p>
+
 <pre><code>bash scripts/samtools_snp_calling.sh
 </code></pre>
 
 <h3>
 <a id="understanding-the-vcf-format" class="anchor" href="#understanding-the-vcf-format" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Understanding the VCF format</h3>
 
-<p>First, we will take a look at the VCF format, as this is the output format for most SNP calling and genotyping programs</p>
+<p>Now that we have run the SNP calling programs we will take a look at the VCF format files contained in the <em>vcf_files</em>
+folder.</p>
 
 <p>The VCF format is composed of a header section where each line begins with '##' and the headers describing the columns
-are located on the line starting with '#chrom'. The columns of the VCF from left to right are the chromosome/scaffold,<br>
+are located on the line starting with '#chrom'. </p>
+
+<p>The columns of the VCF from left to right are the chromosome/scaffold,<br>
 position within the reference chromosome/scaffold, an ID (here always ‘.’), the reference allele, the variant allele,
 the SNP/INDEL quality score, the filter field, info field, the sample format field and the samples make up the remaining
 columns (10 in this case).</p>
+
+<p><em>Table 1</em> Description of VCF fields</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">Column Number</th>
+<th align="left">Title</th>
+<th align="left">What it contains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left">1</td>
+<td align="left">CHROM</td>
+<td align="left">chromosome/scaffold</td>
+</tr>
+</tbody>
+</table>
 
 <p>The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
