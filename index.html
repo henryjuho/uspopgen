@@ -279,7 +279,7 @@ that threshold.</p>
 </li>
 <li>Strand Bias (Filtering sites where the number of reference and non-reference reads are highly correlated with the strands of the reads)<br>
 </li>
-<li>Hardy-Weiberg Equilibrium (Filter sites that show significant deviation from Hardy-Weinberg Expectations) </li>
+<li>Hardy-Weinberg Equilibrium (Filter sites that show significant deviation from Hardy-Weinberg Expectations) </li>
 </ul>
 
 <p>For a summary of SNP filtering applied to whole genome resequencing studies in birds see <a href="https://www.dropbox.com/s/xa0bndtz42i1uft/snp_filtering_avian_studies.pdf?dl=0">here.</a></p>
@@ -291,9 +291,35 @@ to filter our samtools SNP VCF. Documentation on this tool can be found <a href=
 bcftools filter -e "QUAL&lt;30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
 </code></pre>
 
-<p>We can also add further filters on minimum and maximum depth.</p>
+<p>We can also add further filters on minimum and maximum depth. We will first calculate the mean depth across site by using
+ the value in the DP INFO field. We can extract the depth with the following</p>
 
-<pre><code>bcftools filter -e "QUAL&lt;30 &amp;&amp; MAX(DP)&gt;250 &amp;&amp; MIN(DP)&lt;20 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
+<pre><code>zgrep -v ^# vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | cut -f8  | grep -oe "DP=[0-9]*" | sed 's/DP=//g' &gt; samtools.SNP.depth
+</code></pre>
+
+<p>Next we will calculate the mean in <em>R</em>.</p>
+
+<p>Launch R.</p>
+
+<pre><code>R
+</code></pre>
+
+<p>We will choose half the mean as our minimum depth and twice the mean as our maximum depth cutoff.</p>
+
+<div class="highlight highlight-source-r"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">dat</span> <span class="pl-k">&lt;-</span> read.delim(<span class="pl-s"><span class="pl-pds">"</span>samtools.SNP.depth<span class="pl-pds">"</span></span>, <span class="pl-v">header</span><span class="pl-k">=</span><span class="pl-c1">F</span>)
+<span class="pl-k">&gt;</span> <span class="pl-v">mean_dp</span> <span class="pl-k">=</span> mean(<span class="pl-smi">dat</span><span class="pl-k">$</span><span class="pl-smi">V1</span>)
+[<span class="pl-c1">1</span>] <span class="pl-c1">106.4987</span>
+<span class="pl-k">&gt;</span> <span class="pl-v">min_dp</span> <span class="pl-k">=</span> <span class="pl-c1">0.5</span><span class="pl-k">*</span><span class="pl-smi">mean_dp</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">min_dp</span>              
+[<span class="pl-c1">1</span>] <span class="pl-c1">53.24937</span>
+<span class="pl-k">&gt;</span> <span class="pl-v">max_dp</span> <span class="pl-k">=</span> <span class="pl-c1">2.0</span><span class="pl-k">*</span><span class="pl-smi">mean_dp</span>
+<span class="pl-k">&gt;</span> <span class="pl-smi">max_dp</span>
+[<span class="pl-c1">1</span>] <span class="pl-c1">212.9975</span>
+<span class="pl-k">&gt;</span> quit()</pre></div>
+
+<p>We can also apply these filters with <code>bcftools filter</code>. (Note that the '||' stand for the logical 'or')</p>
+
+<pre><code>bcftools filter -e "QUAL&lt;30 || MAX(DP)&gt;213 || MIN(DP)&lt;53 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
 </code></pre>
 
 <p>Now we will count the number of SNPs that have been filtered.</p>
@@ -305,7 +331,7 @@ bcftools filter -e "QUAL&lt;30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.sn
 <h3>
 <a id="gatk-recommended-hard-filters" class="anchor" href="#gatk-recommended-hard-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK recommended Hard Filters</h3>
 
-<p>In GATK there are two options for filtering SNPs, either hard of soft filtering. The first is to use a 'soft' filtering 
+<p>In GATK there are two options for filtering SNPs, either hard or soft filtering. The first is to use a 'soft' filtering 
 approach by using known variants to carry out Variant Quality Score Recalibration. This approach requires a large number 
 (100,000s) of known SNPs and may not be useful for researchers working on non-model organisms, or species without 
 a large existing set of polymorphism data. Also, this approach may not be used for targeted resequencing such 
@@ -316,7 +342,7 @@ on these recommended filters can be seen here <a href="http://gatkforums.broadin
 
 <p>To apply the hard filters run the following command on the GATK VCF containing only SNPs.</p>
 
-<pre><code>java -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD&lt; 2.0||FS&gt;60.0||MQ&lt;40.0||MQRankSum&lt;-12.5||ReadPosRankSum&lt;-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
+<pre><code>java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD&lt; 2.0||FS&gt;60.0||MQ&lt;40.0||MQRankSum&lt;-12.5||ReadPosRankSum&lt;-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 </code></pre>
 
 <p>Count the number of SNPs that PASS the filters.</p>
