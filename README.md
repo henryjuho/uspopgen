@@ -197,18 +197,18 @@ Launch R.
  
 We will choose half the mean as our minimum depth and twice the mean as our maximum depth cutoff.
 
-    ```R
-    > dat <- read.delim("samtools.SNP.depth", header=F)
-    > mean_dp = mean(dat$V1)
-    > [1] 106.4987
-    [1] 106.4987
-    > min_dp = 0.5*mean_dp
-    > min_dp              
-    [1] 53.24937
-    > max_dp = 2.0*mean_dp
-    > max_dp
-    [1] 212.9975
-    > quit()```
+```R
+> dat <- read.delim("samtools.SNP.depth", header=F)
+> mean_dp = mean(dat$V1)
+> [1] 106.4987
+[1] 106.4987
+> min_dp = 0.5*mean_dp
+> min_dp              
+[1] 53.24937
+> max_dp = 2.0*mean_dp
+> max_dp
+[1] 212.9975
+> quit()```
 
 We can also apply these filters with ```bcftools filter```. (Note that the '||' stand for the logical 'or')
     
