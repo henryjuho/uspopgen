@@ -184,7 +184,7 @@ One of the simplest thresholds that can be applied is a minimum quality score. H
 to filter our samtools SNP VCF. Documentation on this tool can be found [here.](https://samtools.github.io/bcftools/bcftools.html#filter)
 
     export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
-    bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
+    bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.qual_filtered.snps.vcf.gz
 
 Q5. How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
 
@@ -193,15 +193,15 @@ Q5. How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
 Which command line parameter enforces this threshold?
 
 We can also apply a depth filters with ```bcftools filter```. (Note that the '||' stand for the logical 'or'). The mean depth
-for sites was 106 across samples. Here we apply a filter on sites with greater than twice the mean or less than half the mean.
+for sites was 106 across samples. Here we apply a filter on sites with greater than twice the mean or less than half the mean depth.
     
-    bcftools filter -e "QUAL<30 || MAX(DP)>213 || MIN(DP)<53 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
+    bcftools filter -e "QUAL<30 || MAX(DP)>213 || MIN(DP)<53 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.qual_dp_filtered.snps.vcf.gz
  
-Q6. How many SNPs are excluded when we apply both the depth and quality filter to the samtools VCF?
+Count the number of filtered sites as follows.
  
-    zgrep -v ^# vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz | grep -cw LOW_QUAL
-    zgrep -v ^# vcf_files/samtools.chrLGE22.depth_filtered.snps.vcf.gz | grep -cw LOW_QUAL
-     
+    zgrep -v ^# vcf_files/samtools.chrLGE22.qual_dp_filtered.snps.vcf.gz | grep -cw LOW_QUAL
+    
+ Q6. How many SNPs are excluded when we apply both the depth and quality filter to the samtools VCF?   
      
 ### GATK recommended Hard Filters
 
@@ -220,7 +220,7 @@ To apply the hard filters run the following command on the GATK VCF containing o
 
 Count the number of SNPs that PASS the filters.
 
-    zgrep -cv ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c PASS
+    zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -cw GATK_hard_snp_filter
 
 Q7. How many SNPs were filtered using the GATK recommended filters? Which of the common filters that were listed above were not
 included in the GATK filters?
@@ -232,8 +232,8 @@ repetitive regions of the genomes where mapping may be problematic. Here we will
 VCF file to exclude SNPs in repetitive regions using a bed file located at ```data/ref_files/chrLGE22.reps.bed``` which 
 specifies the repetitive regions of chrLGE22.
 
-How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
+Q8. How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
 found in repetitive regions?
 
 
-*Solutions to all the questions can be downloaded from here* 
+*Solutions to all the questions are available from here* 
