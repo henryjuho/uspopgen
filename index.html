@@ -247,13 +247,17 @@ java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_f
 with genome interval data in bed, VCF or GFF format.</p>
 
 <pre><code>module load apps/gcc/5.2/bedtools
-bedtools intersect -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip &gt; vcf_files/both.chrLGE22.raw.snps.vcf.gz
 </code></pre>
 
-<p>Now we will find SNPs called by only one of the callers.    </p>
+<p>We will first extract the SNPs that were called by both callers.</p>
 
-<pre><code>bedtools subtract -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip &gt; vcf_files/both.chrLGE22.raw.snps.vcf.gz
-bedtools subtract -header -a vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -b vcff_files/gatk.chrLGE22.raw.snps.vcf.gz | bgzip &gt;  vcf_files/both.chrLGE22.raw.snps.vcf.gz
+<pre><code>bedtools intersect -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip &gt; vcf_files/both.chrLGE22.raw.snps.vcf.gz
+</code></pre>
+
+<p>Next we will find SNPs called by only one of the callers.    </p>
+
+<pre><code>bedtools subtract -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip &gt; vcf_files/gatk_only.chrLGE22.raw.snps.vcf.gz
+bedtools subtract -header -a vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -b vcf_files/gatk.chrLGE22.raw.snps.vcf.gz | bgzip &gt;  vcf_files/samtools_only.chrLGE22.raw.snps.vcf.gz
 </code></pre>
 
 <p>Q4. How many SNPs were called by both callers? How many by only one of the callers?</p>
@@ -275,8 +279,6 @@ that threshold.</p>
 </li>
 <li>Minimum RMS mapping quality for SNPs<br>
 </li>
-<li>Allele Balance (Filtering sites where the fraction of non-reference reads is too low)<br>
-</li>
 <li>Strand Bias (Filtering sites where the number of reference and non-reference reads are highly correlated with the strands of the reads)<br>
 </li>
 <li>Hardy-Weinberg Equilibrium (Filter sites that show significant deviation from Hardy-Weinberg Expectations) </li>
@@ -288,45 +290,27 @@ that threshold.</p>
 to filter our samtools SNP VCF. Documentation on this tool can be found <a href="https://samtools.github.io/bcftools/bcftools.html#filter">here.</a></p>
 
 <pre><code>export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
-bcftools filter -e "QUAL&lt;30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
+bcftools filter -e "QUAL&lt;30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.qual_filtered.snps.vcf.gz
 </code></pre>
 
-<p>We can also add further filters on minimum and maximum depth. We will first calculate the mean depth across site by using
- the value in the DP INFO field. We can extract the depth with the following</p>
+<p>Q5. How many SNPs PASS at the QUAL &lt; 30 filter for samtools VCF?</p>
 
-<pre><code>zgrep -v ^# vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | cut -f8  | grep -oe "DP=[0-9]*" | sed 's/DP=//g' &gt; samtools.SNP.depth
+<p>(<em>Note</em> that GenotypeGVCF by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
+<a href="https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php">here</a>
+Which command line parameter enforces this threshold?</p>
+
+<p>We can also apply a depth filters with <code>bcftools filter</code>. (Note that the '||' stand for the logical 'or'). The mean depth
+for sites was 106 across samples. Here we apply a filter on sites with greater than twice the mean or less than half the mean depth.</p>
+
+<pre><code>bcftools filter -e "QUAL&lt;30 || MAX(DP)&gt;213 || MIN(DP)&lt;53 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.qual_dp_filtered.snps.vcf.gz
 </code></pre>
 
-<p>Next we will calculate the mean in <strong>R</strong>.</p>
+<p>Count the number of filtered sites as follows.</p>
 
-<p>To launch R in the terminal type R.</p>
-
-<pre><code>R
+<pre><code>zgrep -v ^# vcf_files/samtools.chrLGE22.qual_dp_filtered.snps.vcf.gz | grep -cw LOW_QUAL
 </code></pre>
 
-<p>We will choose half the mean as our minimum depth and twice the mean as our maximum depth cutoff.</p>
-
-<div class="highlight highlight-source-r"><pre><span class="pl-k">&gt;</span> <span class="pl-smi">dat</span> <span class="pl-k">&lt;-</span> read.delim(<span class="pl-s"><span class="pl-pds">"</span>samtools.SNP.depth<span class="pl-pds">"</span></span>, <span class="pl-v">header</span><span class="pl-k">=</span><span class="pl-c1">F</span>)
-<span class="pl-k">&gt;</span> <span class="pl-v">mean_dp</span> <span class="pl-k">=</span> mean(<span class="pl-smi">dat</span><span class="pl-k">$</span><span class="pl-smi">V1</span>)
-[<span class="pl-c1">1</span>] <span class="pl-c1">106.4987</span>
-<span class="pl-k">&gt;</span> <span class="pl-v">min_dp</span> <span class="pl-k">=</span> <span class="pl-c1">0.5</span><span class="pl-k">*</span><span class="pl-smi">mean_dp</span>
-<span class="pl-k">&gt;</span> <span class="pl-smi">min_dp</span>              
-[<span class="pl-c1">1</span>] <span class="pl-c1">53.24937</span>
-<span class="pl-k">&gt;</span> <span class="pl-v">max_dp</span> <span class="pl-k">=</span> <span class="pl-c1">2.0</span><span class="pl-k">*</span><span class="pl-smi">mean_dp</span>
-<span class="pl-k">&gt;</span> <span class="pl-smi">max_dp</span>
-[<span class="pl-c1">1</span>] <span class="pl-c1">212.9975</span>
-<span class="pl-k">&gt;</span> quit()</pre></div>
-
-<p>We can also apply these filters with <code>bcftools filter</code>. (Note that the '||' stand for the logical 'or')</p>
-
-<pre><code>bcftools filter -e "QUAL&lt;30 || MAX(DP)&gt;213 || MIN(DP)&lt;53 " -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz
-</code></pre>
-
-<p>Now we will count the number of SNPs that have been filtered.</p>
-
-<pre><code> zgrep -v ^# vcf_files/samtools.chrLGE22.filtered.snps.vcf.gz | grep -cw LOW_QUAL
- zgrep -v ^# vcf_files/samtools.chrLGE22.depth_filtered.snps.vcf.gz | grep -cw LOW_QUAL
-</code></pre>
+<p>Q6. How many SNPs are excluded when we apply both the depth and quality filter to the samtools VCF?   </p>
 
 <h3>
 <a id="gatk-recommended-hard-filters" class="anchor" href="#gatk-recommended-hard-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GATK recommended Hard Filters</h3>
@@ -342,16 +326,15 @@ on these recommended filters can be seen here <a href="http://gatkforums.broadin
 
 <p>To apply the hard filters run the following command on the GATK VCF containing only SNPs.</p>
 
-<pre><code>java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD&lt; 2.0||FS&gt;60.0||MQ&lt;40.0||MQRankSum&lt;-12.5||ReadPosRankSum&lt;-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
+<pre><code>java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD&lt;2.0||FS&gt;60.0||MQ&lt;40.0||MQRankSum&lt;-12.5||ReadPosRankSum&lt;-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 </code></pre>
 
 <p>Count the number of SNPs that PASS the filters.</p>
 
-<pre><code>zgrep -cv ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c PASS
-zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -c GATK_hard_snp_filter 
+<pre><code>zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -cw GATK_hard_snp_filter
 </code></pre>
 
-<p>How many SNPs were filtered using the GATK recommended filters? Which of the common filters were listed above were not
+<p>Q7. How many SNPs were filtered using the GATK recommended filters? Which of the common filters that were listed above were not
 included in the GATK filters?</p>
 
 <h2>
@@ -362,10 +345,10 @@ repetitive regions of the genomes where mapping may be problematic. Here we will
 VCF file to exclude SNPs in repetitive regions using a bed file located at <code>data/ref_files/chrLGE22.reps.bed</code> which 
 specifies the repetitive regions of chrLGE22.</p>
 
-<p>How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
+<p>Q8. How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
 found in repetitive regions?</p>
 
-<p><em>Solutions to all the questions can be downloaded from here</em> </p>
+<p><em>Solutions to all the questions are available from here</em> </p>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/padraicc/uspopgen">University of Sheffield PopGen Workshop March 2016</a> is maintained by <a href="https://github.com/padraicc">padraicc</a>.</span>
