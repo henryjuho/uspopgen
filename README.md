@@ -104,7 +104,7 @@ are located on the line starting with '#CHROM'.
 The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
 these values may be used for filtering (see below). The format for the genotype information is explained in the header
 of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an INDEL. For more
-information on the VCF format see [here.](http://samtools.github.io/hts-specs/VCFv4.2.pdf)
+information on the VCF format see [here.](http://samtools.github.io/hts-specs/VCFv4.2.pdf) and [here.](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)
 
 Now, take a look at the GATK and samtools vcf files.
 
@@ -123,6 +123,10 @@ Note that different SNP callers will produce some different annotations in the I
 fields. 
 
 **Q1.** What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?
+
+Samtools is less well documented with regard to exactly what some of its annotations are, beyond what can be understood from the VCF header. 
+GATK has a much richer documentations which can be browsed [here.](https://www.broadinstitute.org/gatk/guide/tooldocs/#VariantAnnotations)
+
 
 ### Comparing the output from the two callers
 
@@ -161,7 +165,7 @@ Next we will find SNPs called by only one of the callers.
     bedtools subtract -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip > vcf_files/gatk_only.chrLGE22.raw.snps.vcf.gz
     bedtools subtract -header -a vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -b vcf_files/gatk.chrLGE22.raw.snps.vcf.gz | bgzip >  vcf_files/samtools_only.chrLGE22.raw.snps.vcf.gz
     
-**Q4.** How many SNPs were called by both callers? How many by only one of the callers?
+**Q4.** How many SNPs did both callers call? How many by only one of the callers?
 
 ## Filtering SNPs
 
@@ -190,7 +194,6 @@ to filter our samtools SNP VCF. Documentation on this tool can be found [here.](
 
 (*Note* that GenotypeGVCF by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
 [here](https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php)
-Which command line parameter enforces this threshold?
 
 We can also apply a depth filters with ```bcftools filter```. (Note that the '||' stand for the logical 'or'). The mean depth
 for sites was 106 across samples. Here we apply a filter on sites with greater than twice the mean or less than half the mean depth.
@@ -225,8 +228,7 @@ Count the number of SNPs that PASS the filters.
 
     zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -cw PASS
 
-**Q7.** How many SNPs were filtered using the GATK recommended filters? Which of the common filters that were listed above were not
-included in the GATK filters?
+**Q7.** How many SNPs were filtered using the GATK recommended filters? Do the recommended GATK hardfilters filter based on th QUAL score?
 
 ## Region Filters
 
