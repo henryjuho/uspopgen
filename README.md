@@ -122,7 +122,7 @@ To find an explanation of the info field in the samtools VCF, look at the last 2
 Note that different SNP callers will produce some different annotations in the INFO field and genotype
 fields. 
 
-Q1. What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?
+**Q1.** What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?
 
 ### Comparing the output from the two callers
 
@@ -133,7 +133,7 @@ Count the number of variants in the vcf file using zgrep (grep for compressed fi
     zgrep -cv ^# vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz 
     zgrep -cv ^# vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz 
     
-Q2. Which tool calls the most variants?
+**Q2.** Which tool calls the most variants?
 
 Now we will extract only biallelic SNPs and discard the INDELs from the VCF using GATK's SelectVariants tool.
     
@@ -145,7 +145,7 @@ We will also extract the SNPs from the samtools vcf, but first we need to index 
     tabix -p vcf vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
     
-Q3. How many SNPs in the VCF files?
+**Q3.** How many SNPs in the VCF files?
 
 Extract and compare the number of SNPs called by each caller using bedtools. Bedtools is a very useful tools for working
 with genome interval data in bed, VCF or GFF format.
@@ -161,7 +161,7 @@ Next we will find SNPs called by only one of the callers.
     bedtools subtract -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip > vcf_files/gatk_only.chrLGE22.raw.snps.vcf.gz
     bedtools subtract -header -a vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -b vcf_files/gatk.chrLGE22.raw.snps.vcf.gz | bgzip >  vcf_files/samtools_only.chrLGE22.raw.snps.vcf.gz
     
-Q4. How many SNPs were called by both callers? How many by only one of the callers?
+**Q4.** How many SNPs were called by both callers? How many by only one of the callers?
 
 ## Filtering SNPs
 
@@ -186,7 +186,7 @@ to filter our samtools SNP VCF. Documentation on this tool can be found [here.](
     export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
     bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.qual_filtered.snps.vcf.gz
 
-Q5. How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
+**Q5.** How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
 
 (*Note* that GenotypeGVCF by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
 [here](https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php)
@@ -201,7 +201,7 @@ Count the number of filtered sites as follows.
  
     zgrep -v ^# vcf_files/samtools.chrLGE22.qual_dp_filtered.snps.vcf.gz | grep -cw LOW_QUAL
     
- Q6. How many SNPs are excluded when we apply both the depth and quality filter to the samtools VCF?   
+ **Q6.** How many SNPs are excluded when we apply both the depth and quality filter to the samtools VCF?   
      
 ### GATK recommended Hard Filters
 
@@ -212,28 +212,32 @@ a large existing set of polymorphism data. Also, this approach may not be used f
 GBS or RADseq data.
 
 In cases where VQSR can not be used, the GATK developers recommend a set of hard filters for filtering SNPs. Further details
-on these recommended filters can be seen here [here](http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
+on these recommended filters can be seen [here](http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
 
 To apply the hard filters run the following command on the GATK VCF containing only SNPs.
 
     java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD<2.0||FS>60.0||MQ<40.0||MQRankSum<-12.5||ReadPosRankSum<-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 
+(**Note** that the VariantFiltration tool issues a warning at sites that lack sites lacking the MQRankSum and ReadPosRankSum annotations.
+See why this is the case [here](http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set))
+
 Count the number of SNPs that PASS the filters.
 
-    zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -cw GATK_hard_snp_filter
+    zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -cw PASS
 
-Q7. How many SNPs were filtered using the GATK recommended filters? Which of the common filters that were listed above were not
+**Q7.** How many SNPs were filtered using the GATK recommended filters? Which of the common filters that were listed above were not
 included in the GATK filters?
 
 ## Region Filters
+
+Finally, if you have time you can look at how to filter SNPs that fall in repetitive regions of the genome.
 
 Another common additional filter applied to filtering SNPs in whole genome data is to exclude SNPs that fall in 
 repetitive regions of the genomes where mapping may be problematic. Here we will further filter the GATK hard filtered 
 VCF file to exclude SNPs in repetitive regions using a bed file located at ```data/ref_files/chrLGE22.reps.bed``` which 
 specifies the repetitive regions of chrLGE22.
 
-Q8. How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools subtract and how many SNPs are
-found in repetitive regions?
+**Q8.** How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools?
 
 
 *Solutions to all the questions are available from here* 
