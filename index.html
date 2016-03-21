@@ -22,8 +22,8 @@
       <h1>
 <a id="snp-calling-and-filtering" class="anchor" href="#snp-calling-and-filtering" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>SNP calling and Filtering</h1>
 
-<p>We will use some whole genome data from 10 great tit idnviduals to look at SNP calling and filtering.
-These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
+<p>We will use some whole genome data from 10 great tit individuals to look at SNP calling and filtering.
+These 10 individuals were sampled in Europe and are a subset of the 29 birds that were sequenced and 
 analysed in <a href="http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html">Laine et al. (2016)</a>.</p>
 
 <p>We will focus on a small subset of the genome, calling SNPs on chrLGE22</p>
@@ -170,12 +170,12 @@ are located on the line starting with '#CHROM'. </p>
 <tr>
 <td align="left">7</td>
 <td align="left">FILTER</td>
-<td align="left">THe field storing filtering information as a string ('.' in an unfiltered file)</td>
+<td align="left">The field storing filtering information as a string ('.' in an unfiltered file)</td>
 </tr>
 <tr>
 <td align="left">8</td>
 <td align="left">INFO</td>
-<td align="left">';' delimited list of variant annotations</td>
+<td align="left">List of variant annotations delimited by ';'</td>
 </tr>
 <tr>
 <td align="left">9</td>
@@ -191,7 +191,7 @@ are located on the line starting with '#CHROM'. </p>
 </table>
 
 <p>The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
-these values may be used for filtering (see below). The format for the genotype information is explained in the header
+these values may be used for filtering. The format for the genotype information is explained in the header
 of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an INDEL. For more
 information on the VCF format see <a href="http://samtools.github.io/hts-specs/VCFv4.2.pdf">here.</a> and <a href="http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it">here.</a></p>
 
@@ -217,7 +217,8 @@ fields. </p>
 <p><strong>Q1.</strong> What differences do you see between the INFO field of the samtools VCF and the GATK VCF files?</p>
 
 <p>Samtools is less well documented with regard to exactly what some of its annotations are, beyond what can be understood from the VCF header. 
-GATK has a much richer documentations which can be browsed <a href="https://www.broadinstitute.org/gatk/guide/tooldocs/#VariantAnnotations">here.</a></p>
+GATK has a much richer documentations which can be browsed <a href="https://www.broadinstitute.org/gatk/guide/tooldocs/#VariantAnnotations">here.</a>
+Click on Variant annotations for more info.</p>
 
 <h3>
 <a id="comparing-the-output-from-the-two-callers" class="anchor" href="#comparing-the-output-from-the-two-callers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Comparing the output from the two callers</h3>
@@ -298,8 +299,9 @@ bcftools filter -e "QUAL&lt;30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.sn
 
 <p><strong>Q5.</strong> How many SNPs PASS at the QUAL &lt; 30 filter for samtools VCF?</p>
 
-<p>(<em>Note</em> that GenotypeGVCF by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
-<a href="https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php">here</a></p>
+<p>(<strong>Note</strong> that the number of SNPs in the QUAL filtered samtools VCF is now more similar to the GATK raw vcg. This is because the 
+GenotypeGVCF tool by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
+<a href="https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php">here</a>)</p>
 
 <p>We can also apply a depth filters with <code>bcftools filter</code>. (Note that the '||' stand for the logical 'or'). The mean depth
 for sites was 106 across samples. Here we apply a filter on sites with greater than twice the mean or less than half the mean depth.</p>
@@ -331,7 +333,7 @@ on these recommended filters can be seen <a href="http://gatkforums.broadinstitu
 <pre><code>java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD&lt;2.0||FS&gt;60.0||MQ&lt;40.0||MQRankSum&lt;-12.5||ReadPosRankSum&lt;-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 </code></pre>
 
-<p>(<strong>Note</strong> that the VariantFiltration tool issues a warning at sites that lack sites lacking the MQRankSum and ReadPosRankSum annotations.
+<p>(<strong>Note</strong> that the VariantFiltration tool issues a warning at sites the MQRankSum and ReadPosRankSum annotations.
 See why this is the case <a href="http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set">here</a>)</p>
 
 <p>Count the number of SNPs that PASS the filters.</p>
@@ -340,6 +342,10 @@ See why this is the case <a href="http://gatkforums.broadinstitute.org/gatk/disc
 </code></pre>
 
 <p><strong>Q7.</strong> How many SNPs were filtered using the GATK recommended filters? Do the recommended GATK hardfilters filter based on th QUAL score?</p>
+
+<p>The GATK recommendation may need tweaking. It is worthwhile to extract the annotations from the VCF file and plot them to get
+an idea where to set the cut offs for the various annotations. A tool such as the VariantsToTable (see <a href="https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_VariantsToTable.php">here</a>) 
+tools is a convenient way to extract the annotations to a text file that may be read into R.</p>
 
 <h2>
 <a id="region-filters" class="anchor" href="#region-filters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Region Filters</h2>
