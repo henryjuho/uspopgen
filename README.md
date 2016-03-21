@@ -1,7 +1,7 @@
 # SNP calling and Filtering
 
-We will use some whole genome data from 10 great tit idnviduals to look at SNP calling and filtering.
-These 10 individuals were sampled in Europe and area subset of the 29 birds that were sequenced and 
+We will use some whole genome data from 10 great tit individuals to look at SNP calling and filtering.
+These 10 individuals were sampled in Europe and are a subset of the 29 birds that were sequenced and 
 analysed in [Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
 
 We will focus on a small subset of the genome, calling SNPs on chrLGE22
@@ -95,14 +95,14 @@ are located on the line starting with '#CHROM'.
 | 4 | REF | Allele in the reference genome  |
 | 5 | ALT | The variant allele |
 | 6 | QUAL | The variant quality score (phred-scale) |
-| 7 | FILTER | THe field storing filtering information as a string ('.' in an unfiltered file) |
-| 8 | INFO | ';' delimited list of variant annotations |
+| 7 | FILTER | The field storing filtering information as a string ('.' in an unfiltered file) |
+| 8 | INFO | List of variant annotations delimited by ';'  |
 | 9 | FORMAT | Describes the format for the sample genotype information in column 10 onward |
 | 10 to end | Sample id (from SM tag in BAM file RG string) | Sample genotype information (Usually also stores the genotype qualities (GQ) and genotype likelihoods (GL or PL (phred-scaled) |
  
  
 The INFO field contains a lot of annotations for the variant site (e.g Depth, Mapping Qualtity etc.) and
-these values may be used for filtering (see below). The format for the genotype information is explained in the header
+these values may be used for filtering. The format for the genotype information is explained in the header
 of VCF file. Each row following the header section is a variant site in the VCF, either a SNP or an INDEL. For more
 information on the VCF format see [here.](http://samtools.github.io/hts-specs/VCFv4.2.pdf) and [here.](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)
 
@@ -126,6 +126,7 @@ fields.
 
 Samtools is less well documented with regard to exactly what some of its annotations are, beyond what can be understood from the VCF header. 
 GATK has a much richer documentations which can be browsed [here.](https://www.broadinstitute.org/gatk/guide/tooldocs/#VariantAnnotations)
+Click on Variant annotations for more info.
 
 
 ### Comparing the output from the two callers
@@ -192,8 +193,9 @@ to filter our samtools SNP VCF. Documentation on this tool can be found [here.](
 
 **Q5.** How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
 
-(*Note* that GenotypeGVCF by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
-[here](https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php)
+(**Note** that the number of SNPs in the QUAL filtered samtools VCF is now more similar to the GATK raw vcg. This is because the 
+GenotypeGVCF tool by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
+[here](https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php))
 
 We can also apply a depth filters with ```bcftools filter```. (Note that the '||' stand for the logical 'or'). The mean depth
 for sites was 106 across samples. Here we apply a filter on sites with greater than twice the mean or less than half the mean depth.
@@ -221,7 +223,7 @@ To apply the hard filters run the following command on the GATK VCF containing o
 
     java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD<2.0||FS>60.0||MQ<40.0||MQRankSum<-12.5||ReadPosRankSum<-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 
-(**Note** that the VariantFiltration tool issues a warning at sites that lack sites lacking the MQRankSum and ReadPosRankSum annotations.
+(**Note** that the VariantFiltration tool issues a warning at sites the MQRankSum and ReadPosRankSum annotations.
 See why this is the case [here](http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set))
 
 Count the number of SNPs that PASS the filters.
@@ -229,6 +231,12 @@ Count the number of SNPs that PASS the filters.
     zgrep -v ^# vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz | grep -cw PASS
 
 **Q7.** How many SNPs were filtered using the GATK recommended filters? Do the recommended GATK hardfilters filter based on th QUAL score?
+
+
+The GATK recommendation may need tweaking. It is worthwhile to extract the annotations from the VCF file and plot them to get
+an idea where to set the cut offs for the various annotations. A tool such as the VariantsToTable (see [here](https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_VariantsToTable.php)) 
+tools is a convenient way to extract the annotations to a text file that may be read into R.
+
 
 ## Region Filters
 
