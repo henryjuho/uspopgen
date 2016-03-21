@@ -193,7 +193,7 @@ to filter our samtools SNP VCF. Documentation on this tool can be found [here.](
 
 **Q5.** How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
 
-(**Note** that the number of SNPs in the QUAL filtered samtools VCF is now more similar to the GATK raw vcg. This is because the 
+(**Note** that the number of SNPs in the QUAL filtered samtools VCF is now more similar to the GATK raw VCF. This is because the 
 GenotypeGVCF tool by default excludes calls with QUAL less than 30. See the documentation on GenotypeGVCF tools 
 [here](https://www.broadinstitute.org/gatk/guide/tooldocs/org_broadinstitute_gatk_tools_walkers_variantutils_GenotypeGVCFs.php))
 
