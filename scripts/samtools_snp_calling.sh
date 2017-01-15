@@ -15,3 +15,4 @@ export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
 
 samtools mpileup -q 20 -Q 10 -ugf  ${REF_FILE} -b bams.list | bcftools call -vmO z -f GQ -o ${VCF_OUT}/samtools.chrLGE22.raw.snps.indels.vcf.gz
 
+bcftools index -t ${VCF_OUT}/samtools.chrLGE22.raw.snps.indels.vcf.gz 
