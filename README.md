@@ -147,7 +147,6 @@ Now we will extract only biallelic SNPs and discard the INDELs from the VCF usin
 
 We will also extract the SNPs from the samtools vcf, but first we need to index it, as the GATK tools require this.
 
-    tabix -p vcf vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
     
 **Q3.** How many SNPs in the VCF files?
