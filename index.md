@@ -145,7 +145,7 @@ Now we will extract only biallelic SNPs and discard the INDELs from the VCF usin
     module load apps/binapps/GATK
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
 
-We will also extract the SNPs from the samtools vcf, but first we need to index it, as the GATK tools require this.
+Now use the same approach to extract the biallelic SNPs from the samtools vcf.
 
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
     
@@ -221,7 +221,7 @@ To apply the hard filters run the following command on the GATK VCF containing o
 
     java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD<2.0||FS>60.0||MQ<40.0||MQRankSum<-12.5||ReadPosRankSum<-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 
-(**Note** that the VariantFiltration tool issues a warning at sites the MQRankSum and ReadPosRankSum annotations.
+(**Note** that the VariantFiltration tool issues a warning at some sites for the MQRankSum and ReadPosRankSum annotations.
 See why this is the case [here](http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set))
 
 Count the number of SNPs that PASS the filters.
