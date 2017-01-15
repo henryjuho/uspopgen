@@ -246,6 +246,6 @@ VCF file to exclude SNPs in repetitive regions using a bed file located at ```da
 specifies the repetitive regions of chrLGE22.
 
 **Q8.** How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools?
-
+(Hint: Conisider using using one of the bedtools used earlier)
 
 *Solutions to all the questions are available from [here](https://www.dropbox.com/s/3ehl4p4hc5ux90n/Solutions.pdf?dl=0)* 
