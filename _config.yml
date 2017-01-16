@@ -1,1 +1,8 @@
+title: University of Sheffield PopGen Workshop January 2017
+description: 
+google_analytics: 
+show_downloads: true
 theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
