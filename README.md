@@ -160,11 +160,10 @@ We will first extract the SNPs that were called by both callers.
     
     bedtools intersect -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip > vcf_files/both.chrLGE22.raw.snps.vcf.gz
     
-Next we will find SNPs called by only one of the callers.    
-    
-    bedtools subtract -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip > vcf_files/gatk_only.chrLGE22.raw.snps.vcf.gz
-    bedtools subtract -header -a vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -b vcf_files/gatk.chrLGE22.raw.snps.vcf.gz | bgzip >  vcf_files/samtools_only.chrLGE22.raw.snps.vcf.gz
-    
+Next we will find SNPs called by only one of the callers.  Look at the documentation for bedtools subtract and use this tools to find SNPs called only by GATK not by samtools/bcftools and vice-versa.
+
+http://bedtools.readthedocs.io/en/latest/content/tools/subtract.html
+        
 **Q4.** How many SNPs did both callers call? How many by only one of the callers?
 
 ## Filtering SNPs
