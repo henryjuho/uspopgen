@@ -162,7 +162,7 @@ We will first extract the SNPs that were called by both callers.
     
 Next we will find SNPs called by only one of the callers.  Look at the documentation for bedtools subtract and use this tools to find SNPs called only by GATK not by samtools/bcftools and vice-versa.
 
-http://bedtools.readthedocs.io/en/latest/content/tools/subtract.html
+[](http://bedtools.readthedocs.io/en/latest/content/tools/subtract.html)
         
 **Q4.** How many SNPs did both callers call? How many by only one of the callers?
 
