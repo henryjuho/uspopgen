@@ -4,7 +4,7 @@ We will use some whole genome data from 10 great tit individuals to look at SNP 
 These 10 individuals were sampled in Europe and are a subset of the 29 birds that were sequenced and 
 analysed in [Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
 
-We will focus on a small subset of the genome, calling SNPs on chrLGE22
+We will focus on a small subset of the genome, calling SNPs on chrLGE22.
 
 The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.
