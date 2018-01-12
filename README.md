@@ -8,7 +8,7 @@ We will focus on a small subset of the genome, calling SNPs on chrLGE22.
 
 The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.
-
+ 
 ## Programs required
 All the programs we will use are available on iceberg through the module system or from the genomics repository.
 
