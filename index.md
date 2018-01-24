@@ -23,7 +23,7 @@ The following programs will be used:
 
 Type the following at the command terminal.
 
-    git clone https://github.com/padraicc/uspopgen
+    git clone https://github.com/henryjuho/uspopgen
     
 This will download a folder called uspopgen into your current directory. Change directory into the uspopgen folder.
     
