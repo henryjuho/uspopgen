@@ -35,7 +35,7 @@ Now take a look at the contents.
     
 You will find folders called ```data/``` and ```scripts/``` and a ```README.md``` file containing the the text for this webpage.
 
-You will also see file called ```uspopgen_modules``` which contains the commands requied to load the software for the course. To load them issue:
+You will also see a file named ```uspopgen_modules``` which contains the commands required to load the software for the course. To load them issue:
 
     source uspopgen_modules
 
