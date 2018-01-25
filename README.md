@@ -1,5 +1,5 @@
 # SNP calling and Filtering
-
+ 
 We will use some whole genome data from 10 great tit individuals to look at SNP calling and filtering.
 These 10 individuals were sampled in Europe and are a subset of the 29 birds that were sequenced and 
 analysed in [Laine et al. (2016)](http://www.nature.com/ncomms/2016/160125/ncomms10474/full/ncomms10474.html).
@@ -8,7 +8,7 @@ We will focus on a small subset of the genome, calling SNPs on chrLGE22.
 
 The 10 birds were sequenced with 100bp paired-end Illumina reads to a mean depth of between 9-14x.
 In the Laine et al. (2016) paper the SNP calling was performed using GATK, Platypus and ANGSD.
- 
+
 ## Programs required
 All the programs we will use are available on iceberg through the module system or from the genomics repository.
 
@@ -23,7 +23,7 @@ The following programs will be used:
 
 Type the following at the command terminal.
 
-    git clone https://github.com/padraicc/uspopgen
+    git clone https://github.com/henryjuho/uspopgen
     
 This will download a folder called uspopgen into your current directory. Change directory into the uspopgen folder.
     
@@ -34,6 +34,10 @@ Now take a look at the contents.
     ls
     
 You will find folders called ```data/``` and ```scripts/``` and a ```README.md``` file containing the the text for this webpage.
+
+You will also see a file named ```uspopgen_modules``` which contains the commands required to load the software for the course. To load them issue:
+
+    source uspopgen_modules
 
 ## Data files
 
@@ -142,10 +146,9 @@ Count the number of variants in the vcf file using zgrep (grep for compressed fi
 
 Now we will extract only biallelic SNPs and discard the INDELs from the VCF using GATK's SelectVariants tool.
     
-    module load apps/binapps/GATK
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
 
-We will also extract the SNPs from the samtools vcf, but first we need to index it, as the GATK tools require this.
+Now use the same approach to extract the biallelic SNPs from the samtools vcf.
 
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/samtools.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
     
@@ -153,17 +156,16 @@ We will also extract the SNPs from the samtools vcf, but first we need to index 
 
 Extract and compare the number of SNPs called by each caller using bedtools. Bedtools is a very useful tools for working
 with genome interval data in bed, VCF or GFF format.
-
-    module load apps/gcc/5.2/bedtools
     
 We will first extract the SNPs that were called by both callers.
     
     bedtools intersect -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip > vcf_files/both.chrLGE22.raw.snps.vcf.gz
     
-Next we will find SNPs called by only one of the callers.  Look at the documentation for bedtools subtract and use this tools to find SNPs called only by GATK not by samtools/bcftools and vice-versa.
-
-[](http://bedtools.readthedocs.io/en/latest/content/tools/subtract.html)
-        
+Next we will find SNPs called by only one of the callers.    
+    
+    bedtools subtract -header -a vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -b vcf_files/samtools.chrLGE22.raw.snps.vcf.gz | bgzip > vcf_files/gatk_only.chrLGE22.raw.snps.vcf.gz
+    bedtools subtract -header -a vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -b vcf_files/gatk.chrLGE22.raw.snps.vcf.gz | bgzip >  vcf_files/samtools_only.chrLGE22.raw.snps.vcf.gz
+    
 **Q4.** How many SNPs did both callers call? How many by only one of the callers?
 
 ## Filtering SNPs
@@ -185,7 +187,6 @@ For a summary of SNP filtering applied to whole genome resequencing studies in b
 One of the simplest thresholds that can be applied is a minimum quality score. Here we will use the a *bcftools filter*
 to filter our samtools SNP VCF. Documentation on this tool can be found [here.](https://samtools.github.io/bcftools/bcftools.html#filter)
 
-    export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
     bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.qual_filtered.snps.vcf.gz
 
 **Q5.** How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
@@ -220,7 +221,7 @@ To apply the hard filters run the following command on the GATK VCF containing o
 
     java -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T VariantFiltration -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.vcf.gz --filterExpression "QD<2.0||FS>60.0||MQ<40.0||MQRankSum<-12.5||ReadPosRankSum<-8.0" --filterName "GATK_hard_snp_filter" -o vcf_files/gatk.chrLGE22.hard_filtered.snps.vcf.gz
 
-(**Note** that the VariantFiltration tool issues a warning at sites the MQRankSum and ReadPosRankSum annotations.
+(**Note** that the VariantFiltration tool issues a warning at some sites for the MQRankSum and ReadPosRankSum annotations.
 See why this is the case [here](http://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set))
 
 Count the number of SNPs that PASS the filters.
@@ -245,6 +246,6 @@ VCF file to exclude SNPs in repetitive regions using a bed file located at ```da
 specifies the repetitive regions of chrLGE22.
 
 **Q8.** How might you exclude SNPs in our filtered GATK VCF file within repetitive regions using bedtools?
-
+(Hint: Consider using using one of the bedtools used earlier)
 
 *Solutions to all the questions are available from [here](https://www.dropbox.com/s/3ehl4p4hc5ux90n/Solutions.pdf?dl=0)* 
