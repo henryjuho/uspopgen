@@ -35,6 +35,10 @@ Now take a look at the contents.
     
 You will find folders called ```data/``` and ```scripts/``` and a ```README.md``` file containing the the text for this webpage.
 
+You will also see file called ```uspopgen_modules``` which contains the commands requied to load the software for the course. To load them issue:
+
+    source uspopgen_modules
+
 ## Data files
 
 The data files we will use are located in the data folder
@@ -142,7 +146,6 @@ Count the number of variants in the vcf file using zgrep (grep for compressed fi
 
 Now we will extract only biallelic SNPs and discard the INDELs from the VCF using GATK's SelectVariants tool.
     
-    module load apps/binapps/GATK
     java  -Xmx3g -jar $GATKHOME/GenomeAnalysisTK.jar -T SelectVariants -R data/ref_files/Parus_major_1.04.chrLGE22.fa -V vcf_files/gatk.chrLGE22.raw.snps.indels.vcf.gz -o vcf_files/gatk.chrLGE22.raw.snps.vcf.gz -selectType SNP -restrictAllelesTo BIALLELIC 
 
 Now use the same approach to extract the biallelic SNPs from the samtools vcf.
@@ -153,8 +156,6 @@ Now use the same approach to extract the biallelic SNPs from the samtools vcf.
 
 Extract and compare the number of SNPs called by each caller using bedtools. Bedtools is a very useful tools for working
 with genome interval data in bed, VCF or GFF format.
-
-    module load apps/gcc/5.2/bedtools
     
 We will first extract the SNPs that were called by both callers.
     
@@ -186,7 +187,6 @@ For a summary of SNP filtering applied to whole genome resequencing studies in b
 One of the simplest thresholds that can be applied is a minimum quality score. Here we will use the a *bcftools filter*
 to filter our samtools SNP VCF. Documentation on this tool can be found [here.](https://samtools.github.io/bcftools/bcftools.html#filter)
 
-    export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
     bcftools filter -e "QUAL<30" -s "LOW_QUAL" vcf_files/samtools.chrLGE22.raw.snps.vcf.gz -O z -o vcf_files/samtools.chrLGE22.qual_filtered.snps.vcf.gz
 
 **Q5.** How many SNPs PASS at the QUAL < 30 filter for samtools VCF?
