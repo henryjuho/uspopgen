@@ -1,0 +1,4 @@
+module load apps/binapps/GATK
+module load apps/gcc/5.2/samtools
+module load apps/gcc/5.2/bedtools
+export PATH=/usr/local/extras/Genomics/apps/bcftools/1.3/bin/:$PATH
